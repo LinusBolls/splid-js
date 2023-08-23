@@ -22,14 +22,18 @@ async function main() {
 
   const inviteCode = 'PWJ E2B P7A';
 
-  const group = await client.group.joinByCode(inviteCode);
+  const groupRes = await client.group.getByInviteCode(inviteCode);
 
-  const groupInfo = await client.groupInfo.getByGroup(group.result.objectId);
+  const groupInfoRes = await client.groupInfo.getByGroup(
+    groupRes.result.objectId
+  );
 
-  const members = await client.person.getByGroup(group.result.objectId);
+  const entriesRes = await client.entry.getByGroup(groupRes.result.objectId);
+
+  const membersRes = await client.person.getByGroup(groupRes.result.objectId);
 
   const expensesAndPayments = await client.entry.getByGroup(
-    group.result.objectId
+    groupRes.result.objectId
   );
 }
 main();
@@ -87,15 +91,17 @@ async function main() {
 
   const inviteCode = 'PWJ E2B P7A';
 
-  const group = await client.group.joinByCode(inviteCode);
+  const groupRes = await client.group.getByInviteCode(inviteCode);
 
-  const groupInfoRes = await client.getGroup(groupRes.result.objectId);
+  const groupInfoRes = await client.groupInfo.getByGroup(
+    groupRes.result.objectId
+  );
 
-  const expensesRes = await client.getExpensesByGroup(groupRes.result.objectId);
+  const entriesRes = await client.entry.getByGroup(groupRes.result.objectId);
 
-  const membersRes = await client.getMembersByGroup(groupRes.result.objectId);
+  const membersRes = await client.person.getByGroup(groupRes.result.objectId);
 
-  for (const entry of expensesRes.result.results) {
+  for (const entry of entriesRes.result.results) {
     console.log(getEntryDescription(entry, membersRes.result.results));
   }
 }
