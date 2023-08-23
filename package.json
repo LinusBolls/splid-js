@@ -17,7 +17,8 @@
   "scripts": {
     "build": "microbundle",
     "dev": "microbundle watch",
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "prepublishOnly": "npm run format && npm run build"
   },
   "source": "src/index.ts",
   "exports": {

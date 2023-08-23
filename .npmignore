@@ -1,0 +1,7 @@
+node_modules/
+.DS_STORE
+.npmignore
+.gitignore
+.prettierignore
+.prettierrc.cjs
+src/
