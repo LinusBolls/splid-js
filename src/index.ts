@@ -39,13 +39,14 @@ async function main() {
 
     const res = await client.batchMultipleRequests(codes);
 
+    console.log('completed:', numCodesTried + numCodesToTry);
+
     const after = Date.now();
 
     const batch = {
       skip: numCodesTried,
       amount: numCodesToTry,
       timeMs: after - before,
-
       codes: res,
     };
     await fs.promises.writeFile(

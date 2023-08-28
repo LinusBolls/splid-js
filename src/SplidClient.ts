@@ -83,7 +83,6 @@ export default class SplidClient {
   batchMultipleRequests = this.injectRequestConfig(batchMultipleRequests);
 
   private refreshInstallationId() {
-
     if (this.disableAutomaticInstallationIdRefresh) return;
 
     this.requestConfig.logger.info(
@@ -96,13 +95,15 @@ export default class SplidClient {
     F extends (requestConfig: RequestConfig, ...args: any[]) => any,
   >(f: F) {
     const newF: FuncWithoutConfigArg<typeof f> = (...args) => {
-      return f(this.requestConfig, ...args).catch((err: unknown) => {
+      return f(this.requestConfig, ...args).catch(async (err: unknown) => {
         if (
           (err as Error).message === SplidError.ACCESS_DENIED_RATE_LIMITED.error
         ) {
           this.refreshInstallationId();
 
-          return;
+          const res = await f(this.requestConfig, ...args);
+
+          return res;
         }
         if ((err as Error).name === 'AxiosError') {
           const axiosErr = err as AxiosError<
@@ -111,9 +112,11 @@ export default class SplidClient {
 
           switch (axiosErr.response.data.error) {
             case SplidError.ACCESS_DENIED_RATE_LIMITED.error:
-              this.refreshInstallationId()
-            
-              break;
+              this.refreshInstallationId();
+
+              const res = await f(this.requestConfig, ...args);
+
+              return res;
           }
         }
         this.requestConfig.logger.error(
