@@ -3,9 +3,13 @@ import { RequestConfig } from './requestConfig';
 import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
 import { ScopedLogger } from './logging';
 import { FuncWithoutConfigArg } from './util';
-import { findObjects } from './methods/findObjects';
+import { getEntries, getGroupInfos, getPersons } from './methods/findObjects';
 import { v4 as generateUuid } from 'uuid';
 import { SplidError } from './splidErrors';
+import { createExpense, createPayment } from './methods/createEntry';
+import { createPerson } from './methods/createPerson';
+import { createGroup } from './methods/createGroup';
+import { batchMultipleRequests } from './methods/batchMultipleRequests';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -59,22 +63,47 @@ export default class SplidClient {
   }
   group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
+    create: this.injectRequestConfig(createGroup),
   };
   groupInfo = {
-    getByGroup: this.injectRequestConfig(findObjects('GroupInfo')),
+    getByGroup: this.injectRequestConfig(getGroupInfos),
   };
   person = {
-    getByGroup: this.injectRequestConfig(findObjects('Person')),
+    getByGroup: this.injectRequestConfig(getPersons),
+    create: this.injectRequestConfig(createPerson),
   };
   entry = {
-    getByGroup: this.injectRequestConfig(findObjects('Entry')),
+    getByGroup: this.injectRequestConfig(getEntries),
+    createPayment: this.injectRequestConfig(createPayment),
+    createExpense: this.injectRequestConfig(createExpense),
   };
+  file = {
+    // uploading, changing, deleting
+  };
+  batchMultipleRequests = this.injectRequestConfig(batchMultipleRequests);
+
+  private refreshInstallationId() {
+
+    if (this.disableAutomaticInstallationIdRefresh) return;
+
+    this.requestConfig.logger.info(
+      'encountered rate limit, switching installation id'
+    );
+    this.setRandomInstallationId();
+  }
 
   private injectRequestConfig<
     F extends (requestConfig: RequestConfig, ...args: any[]) => any,
   >(f: F) {
     const newF: FuncWithoutConfigArg<typeof f> = (...args) => {
       return f(this.requestConfig, ...args).catch((err: unknown) => {
+        if (
+          (err as Error).message === SplidError.ACCESS_DENIED_RATE_LIMITED.error
+        ) {
+          this.refreshInstallationId();
+
+          return;
+        }
         if ((err as Error).name === 'AxiosError') {
           const axiosErr = err as AxiosError<
             (typeof SplidError)[keyof typeof SplidError]
@@ -82,15 +111,8 @@ export default class SplidClient {
 
           switch (axiosErr.response.data.error) {
             case SplidError.ACCESS_DENIED_RATE_LIMITED.error:
-              if (!this.disableAutomaticInstallationIdRefresh) {
-                this.requestConfig.logger.info(
-                  'encountered rate limit, switching installation id'
-                );
-
-                this.setRandomInstallationId();
-
-                return;
-              }
+              this.refreshInstallationId()
+            
               break;
           }
         }

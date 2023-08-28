@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { RequestConfig } from '../requestConfig';
 
 export type JoinGroupWithCode400Response =

@@ -64,11 +64,17 @@ export interface Entry {
   __type: 'Object';
   className: 'Entry';
 
-  category?: {
-    /**
-     * e.g. "Food"
-     */
-    originalName: string;
-    type: 'custom' | 'transport' | 'entertainment';
-  };
+  category?: EntryCategory;
 }
+export interface EntryCategory {
+  /**
+   * e.g. "Food"
+   */
+  originalName: string;
+  type: EntryCategoryType;
+}
+export type EntryCategoryType =
+  | 'custom'
+  | 'transport'
+  | 'entertainment'
+  | 'groceries';

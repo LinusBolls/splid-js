@@ -24,7 +24,7 @@ const dateToIso = (date: Date) => {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`;
 };
 
-export const findObjects =
+const findObjects =
   <T extends keyof ClassName>(className: T) =>
   async (
     config: RequestConfig,
@@ -54,3 +54,6 @@ export const findObjects =
     );
     return res.data;
   };
+export const getPersons = findObjects('Person');
+export const getGroupInfos = findObjects('GroupInfo');
+export const getEntries = findObjects('Entry');
