@@ -1,5 +1,16 @@
 import { RequestConfig } from '../requestConfig';
 
+export const getJoinGroupWithAnyCode = (
+  config: RequestConfig,
+  rawCode: string
+) => ({
+  method: 'POST',
+  path: '/parse/functions/joinGroupWithAnyCode',
+  body: {
+    code: removeAllSpaces(rawCode),
+  },
+});
+
 export type JoinGroupWithCode400Response =
   | { code: 141; error: 'Access denied: invalid code' }
   | { code: 141; error: 'Access denied: too many invalid codes' };

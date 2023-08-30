@@ -1,8 +1,6 @@
-import { AxiosError } from 'axios';
-import { generateInviteCodes } from '../inviteCodes';
 import { RequestConfig } from '../requestConfig';
 import { SplidError } from '../splidErrors';
-import { IsoTime } from '../types/primitives';
+import { BatchItem } from '../batch';
 
 export type BatchMultipleRequestsResponse = {
   code: string;
@@ -21,18 +19,12 @@ export type BatchMultipleRequestsResponse = {
 
 export async function batchMultipleRequests(
   config: RequestConfig,
-  codes: string[]
+  requests: BatchItem[]
 ) {
   const url = config.baseUrl + '/parse/batch';
 
   const body = {
-    requests: codes.map((code) => ({
-      method: 'POST',
-      path: '/parse/functions/joinGroupWithAnyCode',
-      body: {
-        code,
-      },
-    })),
+    requests,
   };
   const options = { headers: config.getHeaders() };
 

@@ -5,6 +5,9 @@ export type InstallationResponse = {
   updatedAt: IsoTime;
 };
 
+/**
+ * TODO: research this
+ */
 export async function installation(config: RequestConfig, code: string) {
   const url = config.baseUrl + '/parse/classes/_Installation/' + code;
 
