@@ -1,5 +1,7 @@
 /**
  * e.g. "9c261483-2c88-4685-aae2-34531aedaf2a"
+ *
+ * Can be created using `crypto.randomUUID()`
  */
 
 export type Uuid = string;

@@ -4,7 +4,6 @@ import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
 import { ScopedLogger } from './logging';
 import { FuncWithoutConfigArg } from './util';
 import { findObjects } from './methods/findObjects';
-import { v4 as generateUuid } from 'uuid';
 import { SplidError } from './splidErrors';
 
 export interface SplidClientOptions {
@@ -17,7 +16,7 @@ export default class SplidClient {
   private disableAutomaticInstallationIdRefresh: boolean;
 
   constructor(options?: SplidClientOptions) {
-    this.installationId = options?.installationId ?? generateUuid();
+    this.installationId = options?.installationId ?? crypto.randomUUID();
 
     this.disableAutomaticInstallationIdRefresh =
       options?.disableAutomaticInstallationIdRefresh ?? false;
@@ -33,7 +32,7 @@ export default class SplidClient {
     this.installationId = installationId;
   }
   setRandomInstallationId() {
-    this.installationId = generateUuid();
+    this.installationId = crypto.randomUUID();
   }
 
   private getHeaders() {
