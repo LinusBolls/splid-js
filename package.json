@@ -18,6 +18,8 @@
     "build": "microbundle",
     "dev": "microbundle watch",
     "format": "npx prettier --write .",
+    "lint": "npx prettier --check .",
+    "test": "tsc --noEmit",
     "prepublishOnly": "npm run format && npm run build"
   },
   "source": "src/index.ts",
