@@ -57,10 +57,18 @@ export default class SplidClient {
     };
     return constantHeaders;
   }
-  joinGroupWithAnyCode = this.injectRequestConfig(joinGroupWithAnyCode);
-  getGroup = this.injectRequestConfig(findObjects('GroupInfo'));
-  getMembersByGroup = this.injectRequestConfig(findObjects('Person'));
-  getExpensesByGroup = this.injectRequestConfig(findObjects('Entry'));
+  group = {
+    getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
+  };
+  groupInfo = {
+    getByGroup: this.injectRequestConfig(findObjects('GroupInfo')),
+  };
+  person = {
+    getByGroup: this.injectRequestConfig(findObjects('Person')),
+  };
+  entry = {
+    getByGroup: this.injectRequestConfig(findObjects('Entry')),
+  };
 
   private injectRequestConfig<
     F extends (requestConfig: RequestConfig, ...args: any[]) => any,
