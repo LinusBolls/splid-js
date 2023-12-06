@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "outDir": "dist",
-    "rootDir": "",
+    "rootDir": "src",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "declaration": true,
-    "declarationDir": "./dist"
-  },
-  "include": ["src"]
+    "sourceMap": false
+  }
 }

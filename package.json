@@ -15,22 +15,30 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "microbundle",
+    "build": "microbundle && npm run build:cjs-types && npm run build:mjs-types",
+    "build:cjs-types": "tsc --module commonjs --emitDeclarationOnly --declaration --outDir dist/cjs",
+    "build:mjs-types": "tsc --module esnext --emitDeclarationOnly --declaration --outDir dist/mjs",
     "dev": "microbundle watch",
     "format": "npx prettier --write .",
     "lint": "npx prettier --check .",
     "test": "tsc --noEmit",
     "prepublishOnly": "npm run format && npm run build"
   },
-  "source": "src/index.ts",
   "exports": {
-    "require": "./dist/index.cjs",
-    "default": "./dist/index.modern.js"
+    ".": {
+      "import": {
+        "types": "./dist/mjs/index.d.ts",
+        "default": "./dist/index.modern.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
-  "unpkg": "./dist/index.umd.js",
-  "types": "./dist/src/index.d.ts",
+  "types": "./dist/mjs/index.d.ts",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^20.10.3",
