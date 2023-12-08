@@ -1,5 +1,5 @@
 import Parse from 'parse/node';
-import { CurrencyCode, DeviceType } from './types/primitives';
+import { CurrencyCode, DeviceType, GroupId, JoinCode } from './types/primitives';
 
 // Sadly, the parse JS SDK is a singleton, so this config is global
 Parse.initialize(
@@ -9,18 +9,18 @@ Parse.initialize(
 Parse.serverURL = 'https://splid.herokuapp.com/parse';
 
 export interface GroupInfo {
-  shortCode: string;
+  shortCode: JoinCode;
   longCode: string;
   extendedShortCode: string;
-  objectId: string;
+  objectId: GroupId;
 }
 
 export type GroupCodes = Omit<GroupInfo, 'objectId'>;
 
 export interface SplidClient {
   createGroup(): Promise<GroupInfo>;
-  fetchGroupCodes(groupObjectId: string): Promise<GroupCodes>;
-  joinGroupWithAnyCode(code: string): Promise<GroupInfo>;
+  fetchGroupCodes(groupId: GroupId): Promise<GroupCodes>;
+  joinGroupWithAnyCode(code: JoinCode): Promise<GroupInfo>;
   getCurrencyRates(): Promise<Record<CurrencyCode, number>>;
   getCodeConfig(deviceType: DeviceType): Promise<string>;
 }
@@ -30,13 +30,13 @@ export class ParseSplidClient implements SplidClient {
     return Parse.Cloud.run('createGroup');
   }
 
-  fetchGroupCodes(groupObjectId: string): Promise<GroupCodes> {
+  fetchGroupCodes(groupId: GroupId): Promise<GroupCodes> {
     return Parse.Cloud.run('fetchCodes', {
-      group: groupObjectId,
+      group: groupId,
     });
   }
 
-  joinGroupWithAnyCode(code: string): Promise<GroupInfo> {
+  joinGroupWithAnyCode(code: JoinCode): Promise<GroupInfo> {
     return Parse.Cloud.run('joinGroupWithAnyCode', { code });
   }
 

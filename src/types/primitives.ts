@@ -28,5 +28,6 @@ export type UserId = string & { readonly brand?: unique symbol };
 export type GroupId = string & { readonly brand?: unique symbol };
 export type EntryId = string & { readonly brand?: unique symbol };
 export type InstallationId = string & { readonly brand?: unique symbol };
+export type JoinCode = string & { readonly brand?: unique symbol };
 
 export type DeviceType = 'ios' | 'android';
