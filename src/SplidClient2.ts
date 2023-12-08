@@ -19,8 +19,10 @@ export type GroupCodes = Omit<GroupInfo, 'objectId'>;
 
 export interface SplidClient {
   createGroup(): Promise<GroupInfo>;
-
   fetchGroupCodes(groupObjectId: string): Promise<GroupCodes>;
+  joinGroupWithAnyCode(code: string): Promise<GroupInfo>;
+  getCurrencyRates(): Promise<Record<CurrencyCode, number>>;
+  getCodeConfig(deviceType: DeviceType): Promise<string>;
 }
 
 export class ParseSplidClient implements SplidClient {
