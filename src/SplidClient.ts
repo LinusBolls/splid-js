@@ -12,6 +12,7 @@ import { updateGroup } from './methods/updateGroup';
 import { updatePerson } from './methods/updatePerson';
 import { updateEntry } from './methods/updateEntry';
 import { uploadFile } from './methods/uploadFile';
+import { getCodeConfig } from './methods/getCodeConfig';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -79,6 +80,7 @@ export default class SplidClient {
     };
     return constantHeaders;
   }
+  getCodeConfig = this.injectRequestConfig(getCodeConfig);
   group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
   };
