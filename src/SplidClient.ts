@@ -5,6 +5,9 @@ import { ScopedLogger } from './logging';
 import { FuncWithoutConfigArg } from './util';
 import { findObjects } from './methods/findObjects';
 import { SplidError } from './splidErrors';
+import { createExpense } from './methods/createExpense';
+import { createPayment } from './methods/createPayment';
+import { executeRequestObject } from './requestObject';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -16,23 +19,28 @@ export default class SplidClient {
   private disableAutomaticInstallationIdRefresh: boolean;
 
   constructor(options?: SplidClientOptions) {
-    this.installationId = options?.installationId ?? crypto.randomUUID();
-
-    this.disableAutomaticInstallationIdRefresh =
-      options?.disableAutomaticInstallationIdRefresh ?? false;
+    const randomUUID = () => crypto.randomUUID();
 
     this.requestConfig = {
       baseUrl: 'https://splid.herokuapp.com',
       getHeaders: this.getHeaders.bind(this),
       httpClient: axios.create(),
       logger: new ScopedLogger('splid-js'),
+      installationId: options?.installationId ?? randomUUID(),
+      randomUUID,
     };
+
+    this.disableAutomaticInstallationIdRefresh =
+      options?.disableAutomaticInstallationIdRefresh ?? false;
+  }
+  public get installationId() {
+    return this.requestConfig.installationId;
   }
   setInstallationId(installationId: string) {
-    this.installationId = installationId;
+    this.requestConfig.installationId = installationId;
   }
   setRandomInstallationId() {
-    this.installationId = crypto.randomUUID();
+    this.requestConfig.installationId = this.requestConfig.randomUUID();
   }
 
   private getHeaders() {
@@ -50,7 +58,7 @@ export default class SplidClient {
       /**
        * this is also arbitrary, but leaving it out leads to `{ code: 141, error: 'Access denied' }`
        */
-      'x-parse-installation-id': this.installationId,
+      'x-parse-installation-id': this.requestConfig.installationId,
       'x-parse-os-version': '13',
       'Content-Type': 'application/json',
     };
@@ -66,7 +74,15 @@ export default class SplidClient {
     getByGroup: this.injectRequestConfig(findObjects('Person')),
   };
   entry = {
+    set: this.injectRequestConfig(executeRequestObject(updateEntry)),
     getByGroup: this.injectRequestConfig(findObjects('Entry')),
+    expense: {
+      create: this.injectRequestConfig(executeRequestObject(createExpense)),
+    },
+    payment: {
+      create: this.injectRequestConfig(executeRequestObject(createPayment)),
+    },
+  };
   };
 
   private injectRequestConfig<

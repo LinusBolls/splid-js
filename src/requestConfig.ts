@@ -6,4 +6,6 @@ export interface RequestConfig {
   baseUrl: string;
   logger: Logger;
   getHeaders: () => Record<string, string>;
+  installationId: string;
+  randomUUID: () => string;
 }
