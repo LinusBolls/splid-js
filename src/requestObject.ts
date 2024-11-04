@@ -31,6 +31,9 @@ export const executeRequestObject =
 export interface IdToResponseTypesMap {
   createExpense: CreateExpenseResponse;
   createPayment: CreatePaymentResponse;
+  updateGroup: UpdateGroupResponse;
+  updatePerson: UpdatePersonResponse;
+  updateEntry: UpdateEntryResponse;
 }
 
 export type RequestObject = {

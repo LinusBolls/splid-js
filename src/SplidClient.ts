@@ -8,6 +8,10 @@ import { SplidError } from './splidErrors';
 import { createExpense } from './methods/createExpense';
 import { createPayment } from './methods/createPayment';
 import { executeRequestObject } from './requestObject';
+import { updateGroup } from './methods/updateGroup';
+import { updatePerson } from './methods/updatePerson';
+import { updateEntry } from './methods/updateEntry';
+import { uploadFile } from './methods/uploadFile';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -69,9 +73,13 @@ export default class SplidClient {
   };
   groupInfo = {
     getByGroup: this.injectRequestConfig(findObjects('GroupInfo')),
+
+    set: this.injectRequestConfig(executeRequestObject(updateGroup)),
   };
   person = {
     getByGroup: this.injectRequestConfig(findObjects('Person')),
+
+    set: this.injectRequestConfig(executeRequestObject(updatePerson)),
   };
   entry = {
     set: this.injectRequestConfig(executeRequestObject(updateEntry)),

@@ -107,3 +107,48 @@ async function main() {
 }
 main();
 ```
+
+```typescript
+// updating group properties
+
+const groupInfoRes = await client.groupInfo.getByGroup(
+  groupRes.result.objectId
+);
+
+const groupInfo = groupInfoRes.result.results[0];
+
+groupInfo.name = 'Modified Group 🔥';
+
+groupInfo.customCategories.push('Pharmaceuticals 💊');
+
+groupInfo.currencyRates.EUR = 5;
+
+groupInfo.defaultCurrencyCode = 'EUR';
+
+await client.groupInfo.set(groupInfo);
+```
+```typescript
+// updating person properties
+
+const membersRes = await client.person.getByGroup(groupRes.result.objectId);
+
+const linus = membersRes.result.results.find((i) => i.name === 'Linus');
+
+linus.name = 'Alex';
+linus.initials = 'A';
+
+await client.person.set(linus);
+```
+
+```typescript
+// updating entry properties
+
+const membersRes = await client.person.getByGroup(groupRes.result.objectId);
+
+const linus = membersRes.result.results.find((i) => i.name === 'Linus');
+
+linus.name = 'Alex';
+linus.initials = 'A';
+
+await client.person.set(linus);
+```

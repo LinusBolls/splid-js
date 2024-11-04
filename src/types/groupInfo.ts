@@ -27,4 +27,10 @@ export interface GroupInfo {
   objectId: 'AL5VHgcVHE';
   __type: 'Object';
   className: 'GroupInfo';
+
+  wallpaperID?:
+    | string
+    | {
+        __op: 'Delete';
+      };
 }
