@@ -127,6 +127,19 @@ groupInfo.defaultCurrencyCode = 'EUR';
 
 await client.groupInfo.set(groupInfo);
 ```
+
+```typescript
+// updating group wallpaper (NodeJs)
+
+import fs from 'fs';
+
+const file = await fs.promises.readFile('image.png');
+
+const uploadRes = await client.file.upload(file);
+
+groupInfo.wallpaperID = uploadRes.dataID;
+```
+
 ```typescript
 // updating person properties
 

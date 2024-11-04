@@ -91,6 +91,9 @@ export default class SplidClient {
       create: this.injectRequestConfig(executeRequestObject(createPayment)),
     },
   };
+
+  file = {
+    upload: this.injectRequestConfig(uploadFile),
   };
 
   private injectRequestConfig<
