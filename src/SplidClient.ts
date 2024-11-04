@@ -16,11 +16,16 @@ import { uploadFile } from './methods/uploadFile';
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
   installationId?: string;
+
+  parseApplicationId?: string;
+  parseClientKey?: string;
 }
 export default class SplidClient {
   private requestConfig: RequestConfig;
-  private installationId: string;
   private disableAutomaticInstallationIdRefresh: boolean;
+
+  public parseApplicationId: string;
+  public parseClientKey: string;
 
   constructor(options?: SplidClientOptions) {
     const randomUUID = () => crypto.randomUUID();
@@ -36,6 +41,11 @@ export default class SplidClient {
 
     this.disableAutomaticInstallationIdRefresh =
       options?.disableAutomaticInstallationIdRefresh ?? false;
+
+    this.parseApplicationId =
+      options?.parseApplicationId ?? 'AKCaB0FCF0NIigWjxcDBpDYh7q6eN7gYfKxk5QBN';
+    this.parseClientKey =
+      options?.parseClientKey ?? '4Z29DJvRGdVnB5dcTvDTTG01fbkITxvcPCPOt21M';
   }
   public get installationId() {
     return this.requestConfig.installationId;
@@ -49,20 +59,21 @@ export default class SplidClient {
 
   private getHeaders() {
     const constantHeaders = {
-      'x-parse-app-build-version': '142002',
-      'x-parse-app-display-version': '1.4.2',
+      'x-parse-app-build-version': '182063',
+      'x-parse-app-display-version': '1.8.2',
       /**
        * changing this leads to `{ error: 'unauthorized' }`
        */
-      'x-parse-application-id': 'AKCaB0FCF0NIigWjxcDBpDYh7q6eN7gYfKxk5QBN',
+      'x-parse-application-id': this.parseApplicationId,
       /**
        * this seems arbitrary
        */
-      'x-parse-client-key': '4Z29DJvRGdVnB5dcTvDTTG01fbkITxvcPCPOt21M',
+      'x-parse-client-key': this.parseClientKey,
       /**
        * this is also arbitrary, but leaving it out leads to `{ code: 141, error: 'Access denied' }`
        */
       'x-parse-installation-id': this.requestConfig.installationId,
+      'X-Parse-Client-Version': 'i1.17.3',
       'x-parse-os-version': '13',
       'Content-Type': 'application/json',
     };
