@@ -1,7 +1,9 @@
 # Splid.Js
 
-a reverse-engineered typescript client for the Splid (https://splid.app) API.
-at the moment, only read operations are supported.
+a feature-complete typescript client for the Splid (https://splid.app) API.
+some features like member balances, settling up, viewing expenditure statistics, and searching expenses are computed client side in the Splid app and are not included in this package.
+
+last updated Nov 5 2024
 
 ## Install
 
@@ -164,4 +166,17 @@ linus.name = 'Alex';
 linus.initials = 'A';
 
 await client.person.set(linus);
+```
+
+```typescript
+// creating a group
+
+await client.group.create('🎉 Ramber Zamber', [
+  {
+    name: 'Linus',
+  },
+  {
+    name: 'Lauren',
+  },
+]);
 ```

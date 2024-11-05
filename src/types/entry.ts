@@ -23,7 +23,7 @@ export type EntryItem = {
     SS?: number;
   };
   /**
-   * freetext, e.g. "Museum", but almost always just an empty string
+   * if the expense consists of multiple item, this is the title of the sub-item
    */
   T?: string;
 };
@@ -69,6 +69,18 @@ export interface Entry {
      * e.g. "Food"
      */
     originalName: string;
-    type: 'custom' | 'transport' | 'entertainment';
+    type: EntryCategory;
   };
 }
+
+export const EntryCategories = {
+  ACCOMMODATION: 'accommodation',
+  ENTERTAINMENT: 'entertainment',
+  GROCERIES: 'groceries',
+  RESTAURANTS: 'restaurants',
+  TRANSPORT: 'transport',
+  CUSTOM: 'custom',
+} as const;
+
+export type EntryCategory =
+  (typeof EntryCategories)[keyof typeof EntryCategories];
