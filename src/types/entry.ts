@@ -13,12 +13,17 @@ export type EntryItem = {
      */
     P: UseridToShareMap;
     /**
-     * observed to be always 0 except for when `SS` is defined, in which case it is 1
+     * when assigning the people who profit from an expense, if you scroll all the way to the right, there is the option to toggle between "Percent" and "Share" ("Percent" being the default).
+     *
+     * this field acts as a boolean that indicates whether the expense is in "Share" mode.
+     * when this field is set to `0`, the `SS` field be defined.
      */
-    PT: number;
+    PT: 0 | 1;
     /**
-     * TODO: research this
-     * extremely rare, observed as 1, 8, 15
+     * when assigning the people who profit from an expense, if you scroll all the way to the right, there is the option to toggle between "Percent" and "Share" ("Percent" being the default).
+     *
+     * this field indicates the total amount of shares the expense is split by.
+     * this field is defined if the `PT` field is set to `1`.
      */
     SS?: number;
   };
@@ -39,9 +44,6 @@ export interface Entry {
    * doesn't exist if `isPayment: true`
    */
   title?: string;
-  /**
-   * TODO: research this
-   */
   secondaryPayers?: {};
   primaryPayer: UserId;
   createdGlobally: {
