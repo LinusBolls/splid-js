@@ -26,7 +26,7 @@ export async function joinGroupWithAnyCode(
   try {
     const url = config.baseUrl + '/parse/functions/joinGroupWithAnyCode';
 
-    const code = removeAllSpaces(rawCode);
+    const code = removeAllSpaces(rawCode).toUpperCase();
 
     const body = {
       code,
