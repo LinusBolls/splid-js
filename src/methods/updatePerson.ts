@@ -10,10 +10,7 @@ export interface UpdatePersonResponse {
   };
 }
 
-export function updatePerson(
-  config: RequestConfig,
-  data: Person
-): RequestObject {
+export function updatePerson(config: RequestConfig, data: Person) {
   const sanitized = sanitizeParseObject(data);
 
   sanitized.UpdateID = config.randomUUID();
@@ -23,5 +20,5 @@ export function updatePerson(
     path: '/parse/classes/Person/' + data.objectId,
     method: 'PUT',
     body: sanitized,
-  };
+  } as const;
 }

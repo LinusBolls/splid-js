@@ -15,7 +15,7 @@ export function createPerson(
   groupId: string,
   name: string,
   initials?: string
-): RequestObject {
+) {
   return {
     id: 'createPerson',
     path: '/parse/classes/Person',

@@ -20,10 +20,7 @@ type Options = {
   currencyCode?: string;
 };
 
-export function createPayment(
-  config: RequestConfig,
-  options: Options
-): RequestObject {
+export function createPayment(config: RequestConfig, options: Options) {
   const primaryPayer = options.payer;
 
   const requestObj = {

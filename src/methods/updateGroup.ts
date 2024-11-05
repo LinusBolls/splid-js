@@ -10,10 +10,7 @@ export interface UpdateGroupResponse {
   };
 }
 
-export function updateGroup(
-  config: RequestConfig,
-  data: GroupInfo
-): RequestObject {
+export function updateGroup(config: RequestConfig, data: GroupInfo) {
   const sanitized = sanitizeParseObject(data);
 
   sanitized.UpdateID = config.randomUUID();
@@ -29,5 +26,5 @@ export function updateGroup(
     path: '/parse/classes/GroupInfo/' + data.objectId,
     method: 'PUT',
     body: sanitized,
-  };
+  } as const;
 }

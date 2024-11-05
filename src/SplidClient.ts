@@ -8,7 +8,12 @@ import { findObjects } from './methods/findObjects';
 import { SplidError } from './splidErrors';
 import { createExpense } from './methods/createExpense';
 import { createPayment } from './methods/createPayment';
-import { wrapRequestObject } from './requestObject';
+import {
+  executeRequestObjects,
+  IdToResponseTypesMap,
+  RequestObject,
+  wrapRequestObject,
+} from './requestObject';
 import { updateGroup } from './methods/updateGroup';
 import { updatePerson } from './methods/updatePerson';
 import { updateEntry } from './methods/updateEntry';
@@ -16,6 +21,7 @@ import { uploadFile } from './methods/uploadFile';
 import { getCodeConfig } from './methods/getCodeConfig';
 import { createGroup } from './methods/createGroup';
 import { createPerson } from './methods/createPerson';
+import { BatchClient } from './BatchClient';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -112,6 +118,30 @@ export default class SplidClient {
 
   file = {
     upload: this.injectRequestConfig(uploadFile),
+  };
+
+  /**
+   * combines multiple actions into one request, speeding them up and making them less bandwidth intense
+   *
+   * ```ts
+   * // example: creating multiple group members
+   * await splid.batch((b) => names.map((name) => b.person.create(groupId, name)));
+   * ```
+   */
+  public batch = async <T extends RequestObject[]>(
+    callback: (batch: BatchClient) => T
+  ) => {
+    const batch = new BatchClient(this.requestConfig);
+
+    const requestObjects = callback(batch);
+
+    const data = (await executeRequestObjects(
+      this.requestConfig,
+      requestObjects
+    )) as {
+      [K in keyof T]: IdToResponseTypesMap[T[K]['id']];
+    };
+    return data;
   };
 
   private injectRequestConfig<

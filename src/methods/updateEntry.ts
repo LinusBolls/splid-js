@@ -10,7 +10,7 @@ export interface UpdateEntryResponse {
   };
 }
 
-export function updateEntry(config: RequestConfig, data: Entry): RequestObject {
+export function updateEntry(config: RequestConfig, data: Entry) {
   const sanitized = sanitizeParseObject(data);
 
   sanitized.UpdateID = config.randomUUID();
@@ -20,5 +20,5 @@ export function updateEntry(config: RequestConfig, data: Entry): RequestObject {
     path: '/parse/classes/Entry/' + data.objectId,
     method: 'PUT',
     body: sanitized,
-  };
+  } as const;
 }

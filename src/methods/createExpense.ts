@@ -43,7 +43,7 @@ export function createExpense(
   config: RequestConfig,
   options: Options,
   items: Omit<Item, 'title'> | Item[]
-): RequestObject {
+) {
   const itemsInput = Array.isArray(items)
     ? items.map(toItem)
     : [items].map(toItem);
