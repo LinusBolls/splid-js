@@ -1,31 +1,38 @@
 import { CreateExpenseResponse } from './methods/createExpense';
+import { CreateGroupResponse } from './methods/createGroup';
 import { CreatePaymentResponse } from './methods/createPayment';
+import { CreatePersonResponse } from './methods/createPerson';
 import { UpdateEntryResponse } from './methods/updateEntry';
 import { UpdateGroupResponse } from './methods/updateGroup';
 import { UpdatePersonResponse } from './methods/updatePerson';
 import { RequestConfig } from './requestConfig';
 
-export const executeRequestObject =
-  <ReturnType, FuncArgs extends unknown[]>(
-    func: (...args: [RequestConfig, ...FuncArgs]) => RequestObject
+export const executeRequestObjects = async <T extends RequestObject[]>(
+  config: RequestConfig,
+  requests: T
+) => {
+  const url = config.baseUrl + '/parse/batch';
+
+  const options = { headers: config.getHeaders() };
+
+  const res = await config.httpClient.post(url, { requests }, options);
+
+  const data = res.data as {
+    [K in keyof T]: IdToResponseTypesMap[T[K]['id']];
+  };
+  return data;
+};
+
+export const wrapRequestObject =
+  <Args extends [RequestConfig, ...unknown[]]>(
+    func: (...args: Args) => RequestObject | Promise<RequestObject>
   ) =>
-  async (...args: [RequestConfig, ...FuncArgs]) => {
-    const url = args[0].baseUrl + '/parse/batch';
+  async (...args: Args) => {
+    const requestObject = await func(...args);
 
-    const options = { headers: args[0].getHeaders() };
+    const data = await executeRequestObjects(args[0], [requestObject]);
 
-    const requestObject = func(...args);
-
-    const res = await args[0].httpClient.post(
-      url,
-      { requests: [requestObject] },
-      options
-    );
-
-    const data: IdToResponseTypesMap[(typeof requestObject)['id']] =
-      res.data[0];
-
-    return data;
+    return data[0];
   };
 
 export interface IdToResponseTypesMap {
@@ -34,6 +41,8 @@ export interface IdToResponseTypesMap {
   updateGroup: UpdateGroupResponse;
   updatePerson: UpdatePersonResponse;
   updateEntry: UpdateEntryResponse;
+  createGroup: CreateGroupResponse;
+  createPerson: CreatePersonResponse;
 }
 
 export type RequestObject = {

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+
 import { RequestConfig } from './requestConfig';
 import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
 import { ScopedLogger } from './logging';
@@ -7,12 +8,14 @@ import { findObjects } from './methods/findObjects';
 import { SplidError } from './splidErrors';
 import { createExpense } from './methods/createExpense';
 import { createPayment } from './methods/createPayment';
-import { executeRequestObject } from './requestObject';
+import { wrapRequestObject } from './requestObject';
 import { updateGroup } from './methods/updateGroup';
 import { updatePerson } from './methods/updatePerson';
 import { updateEntry } from './methods/updateEntry';
 import { uploadFile } from './methods/uploadFile';
 import { getCodeConfig } from './methods/getCodeConfig';
+import { createGroup } from './methods/createGroup';
+import { createPerson } from './methods/createPerson';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -83,25 +86,27 @@ export default class SplidClient {
   getCodeConfig = this.injectRequestConfig(getCodeConfig);
   group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
+    create: this.injectRequestConfig(createGroup),
   };
   groupInfo = {
     getByGroup: this.injectRequestConfig(findObjects('GroupInfo')),
 
-    set: this.injectRequestConfig(executeRequestObject(updateGroup)),
+    set: this.injectRequestConfig(wrapRequestObject(updateGroup)),
   };
   person = {
+    create: this.injectRequestConfig(wrapRequestObject(createPerson)),
     getByGroup: this.injectRequestConfig(findObjects('Person')),
 
-    set: this.injectRequestConfig(executeRequestObject(updatePerson)),
+    set: this.injectRequestConfig(wrapRequestObject(updatePerson)),
   };
   entry = {
-    set: this.injectRequestConfig(executeRequestObject(updateEntry)),
+    set: this.injectRequestConfig(wrapRequestObject(updateEntry)),
     getByGroup: this.injectRequestConfig(findObjects('Entry')),
     expense: {
-      create: this.injectRequestConfig(executeRequestObject(createExpense)),
+      create: this.injectRequestConfig(wrapRequestObject(createExpense)),
     },
     payment: {
-      create: this.injectRequestConfig(executeRequestObject(createPayment)),
+      create: this.injectRequestConfig(wrapRequestObject(createPayment)),
     },
   };
 

@@ -12,3 +12,9 @@ export type ArgsWithoutConfig<F extends (...args: any[]) => any> = Tail<
 export type FuncWithoutConfigArg<F extends (...args: any[]) => any> = (
   ...args: ArgsWithoutConfig<F>
 ) => ReturnType<F>;
+
+export const getInitials = (name: string): string =>
+  name
+    .split(' ')
+    .map((i) => i[0])
+    .join('') ?? '';
