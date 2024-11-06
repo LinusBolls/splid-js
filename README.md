@@ -31,17 +31,15 @@ async function main() {
 
   const groupRes = await splid.group.getByInviteCode(inviteCode);
 
-  const groupInfoRes = await splid.groupInfo.getByGroup(
-    groupRes.result.objectId
-  );
+  const groupId = groupRes.result.objectId;
 
-  const entriesRes = await splid.entry.getByGroup(groupRes.result.objectId);
+  const members = await splid.person.getAllByGroup(groupId);
+  const expensesAndPayments = await splid.entry.getAllByGroup(groupId);
 
-  const membersRes = await splid.person.getByGroup(groupRes.result.objectId);
+  const balance = SplidClient.getBalance(members, expensesAndPayments);
+  const suggestedPayments = SplidClient.getSuggestedPayments(balance);
 
-  const expensesAndPayments = await splid.entry.getByGroup(
-    groupRes.result.objectId
-  );
+  console.log(balance, suggestedPayments);
 }
 main();
 ```
@@ -100,28 +98,16 @@ async function main() {
 
   const groupRes = await splid.group.getByInviteCode(inviteCode);
 
-  const groupInfoRes = await splid.groupInfo.getByGroup(
-    groupRes.result.objectId
-  );
+  const groupId = groupRes.result.objectId;
 
-  const entriesRes = await splid.entry.getByGroup(groupRes.result.objectId);
+  const members = await splid.person.getAllByGroup(groupId);
+  const expensesAndPayments = await splid.entry.getAllByGroup(groupId);
 
-  const membersRes = await splid.person.getByGroup(groupRes.result.objectId);
-
-  for (const entry of entriesRes.result.results) {
-    console.log(getEntryDescription(entry, membersRes.result.results));
+  for (const entry of expensesAndPayments) {
+    console.log(getEntryDescription(entry, members));
   }
 }
 main();
-```
-
-```typescript
-// calculating members balances and suggested payments
-const people = await splid.person.getAllByGroup(groupId);
-const entries = await splid.entry.getAllByGroup(groupId);
-
-const balance = SplidClient.getBalance(people, entries);
-const suggestedPayments = SplidClient.getSuggestedPayments(balance);
 ```
 
 ```typescript
@@ -154,9 +140,9 @@ groupInfo.wallpaperID = uploadRes.dataID;
 
 ```typescript
 // updating person properties
-const membersRes = await splid.person.getByGroup(groupId);
+const members = await splid.person.getAllByGroup(groupId);
 
-const linus = membersRes.result.results.find((i) => i.name === 'Linus');
+const linus = members.find((i) => i.name === 'Linus');
 
 linus.name = 'Alex';
 linus.initials = 'A';
@@ -166,9 +152,9 @@ await splid.person.set(linus);
 
 ```typescript
 // updating entry properties
-const entriesRes = await splid.entry.getByGroup(groupId);
+const entries = await splid.entry.getAllByGroup(groupId);
 
-const pizzaEntries = entriesRes.result.results.filter((i) =>
+const pizzaEntries = entries.filter((i) =>
   i.title.toLowerCase().includes('pizza')
 );
 
