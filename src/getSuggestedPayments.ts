@@ -1,3 +1,5 @@
+import { roundToNDigits } from './toFixed';
+
 type Account = {
   payedFor: number;
   payedBy: number;
@@ -18,7 +20,7 @@ export function getSuggestedPayments(
 
   // Sort accounts by balance
   for (const [id, { payedFor, payedBy }] of Object.entries(accounts)) {
-    const balance = payedBy - payedFor;
+    const balance = payedFor - payedBy;
 
     if (balance > 0) {
       positiveBalances.push({ id, balance });
@@ -41,11 +43,13 @@ export function getSuggestedPayments(
     const amount = Math.min(positive.balance, negative.balance);
 
     // Record the payment
-    payments.push({
-      from: negative.id,
-      to: positive.id,
-      amount,
-    });
+    if (roundToNDigits(amount, 2) > 0) {
+      payments.push({
+        from: negative.id,
+        to: positive.id,
+        amount: roundToNDigits(amount, 2),
+      });
+    }
 
     // Adjust balances
     positive.balance -= amount;

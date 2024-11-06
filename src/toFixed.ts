@@ -1,4 +1,4 @@
-const roundToNDigits = (number: number, n: number): number => {
+export const roundToNDigits = (number: number, n: number): number => {
   return parseFloat(number.toFixed(n));
 };
 

@@ -168,7 +168,15 @@ export default class SplidClient {
         balance,
         suggestedPayments: getSuggestedPayments(balance),
       };
-    }.bind(this),
+    }.bind(this) as (groupId: string) => Promise<{
+      balance: Record<
+        string,
+        {
+          balance: string;
+        }
+      >;
+      suggestedPayments: { from: string; to: string; amount: number }[];
+    }>,
   };
   group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
