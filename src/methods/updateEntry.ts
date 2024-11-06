@@ -10,15 +10,19 @@ export interface UpdateEntryResponse {
   };
 }
 
-export function updateEntry(config: RequestConfig, data: Entry) {
-  const sanitized = sanitizeParseObject(data);
+export function updateEntry(config: RequestConfig, data: Entry | Entry[]) {
+  const arr = Array.isArray(data) ? data : [data];
 
-  sanitized.UpdateID = config.randomUUID();
+  return arr.map((i) => {
+    const sanitized = sanitizeParseObject(i);
 
-  return {
-    id: 'updateEntry',
-    path: '/parse/classes/Entry/' + data.objectId,
-    method: 'PUT',
-    body: sanitized,
-  } as const;
+    sanitized.UpdateID = config.randomUUID();
+
+    return {
+      id: 'updateEntry',
+      path: '/parse/classes/Entry/' + i.objectId,
+      method: 'PUT',
+      body: sanitized,
+    } as const;
+  });
 }

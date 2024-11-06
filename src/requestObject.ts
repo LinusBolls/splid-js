@@ -24,15 +24,17 @@ export const executeRequestObjects = async <T extends RequestObject[]>(
 };
 
 export const wrapRequestObject =
-  <Args extends [RequestConfig, ...unknown[]]>(
-    func: (...args: Args) => RequestObject | Promise<RequestObject>
+  <T extends RequestObject, Args extends [RequestConfig, ...unknown[]]>(
+    func: (...args: Args) => T | Promise<T> | T[] | Promise<T[]>
   ) =>
   async (...args: Args) => {
     const requestObject = await func(...args);
 
-    const data = await executeRequestObjects(args[0], [requestObject]);
-
-    return data[0];
+    const data = await executeRequestObjects(
+      args[0],
+      Array.isArray(requestObject) ? requestObject : [requestObject]
+    );
+    return data;
   };
 
 export interface IdToResponseTypesMap {

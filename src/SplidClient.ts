@@ -160,7 +160,7 @@ export default class SplidClient {
   };
 
   /**
-   * combines multiple actions into one request, speeding them up and making them less bandwidth intense
+   * a primitive that combines multiple actions into one request, speeding them up and making them less bandwidth intense.
    *
    * ```ts
    * // example: creating multiple group members
@@ -172,7 +172,7 @@ export default class SplidClient {
   ) => {
     const batch = new BatchClient(this.requestConfig);
 
-    const requestObjects = callback(batch);
+    const requestObjects = callback(batch).flat();
 
     const data = (await executeRequestObjects(
       this.requestConfig,

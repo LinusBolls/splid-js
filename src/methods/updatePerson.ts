@@ -1,6 +1,5 @@
 import { sanitizeParseObject } from '../parse';
 import { RequestConfig } from '../requestConfig';
-import { RequestObject } from '../requestObject';
 import { Person } from '../types/person';
 import { IsoTime } from '../types/primitives';
 
@@ -10,15 +9,19 @@ export interface UpdatePersonResponse {
   };
 }
 
-export function updatePerson(config: RequestConfig, data: Person) {
-  const sanitized = sanitizeParseObject(data);
+export function updatePerson(config: RequestConfig, data: Person | Person[]) {
+  const arr = Array.isArray(data) ? data : [data];
 
-  sanitized.UpdateID = config.randomUUID();
+  return arr.map((i) => {
+    const sanitized = sanitizeParseObject(i);
 
-  return {
-    id: 'updatePerson',
-    path: '/parse/classes/Person/' + data.objectId,
-    method: 'PUT',
-    body: sanitized,
-  } as const;
+    sanitized.UpdateID = config.randomUUID();
+
+    return {
+      id: 'updatePerson',
+      path: '/parse/classes/Person/' + i.objectId,
+      method: 'PUT',
+      body: sanitized,
+    } as const;
+  });
 }

@@ -1,3 +1,5 @@
+<img src="docs/banner.svg" width="100%" />
+
 # Splid.Js
 
 a feature-complete typescript client for the Splid (https://splid.app) API.
@@ -170,15 +172,13 @@ const pizzaEntries = entriesRes.result.results.filter((i) =>
   i.title.toLowerCase().includes('pizza')
 );
 
-await splid.batch((b) =>
-  pizzaEntries.map((i) => {
-    i.category = {
-      originalName: 'Italian Food',
-      type: 'custom',
-    };
-    return b.entry.set(i);
-  })
-);
+for (const entry of pizzaEntries) {
+  entry.category = {
+    type: 'custom',
+    originalName: 'Italian Food 🍕',
+  };
+}
+await splid.entry.set(pizzaEntries);
 ```
 
 ```typescript
