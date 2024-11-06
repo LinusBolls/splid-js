@@ -237,7 +237,7 @@ export default class SplidClient {
             (typeof SplidError)[keyof typeof SplidError]
           >;
 
-          switch (axiosErr.response.data.error) {
+          switch (axiosErr.response?.data?.error) {
             case SplidError.ACCESS_DENIED_RATE_LIMITED.error:
               if (!this.disableAutomaticInstallationIdRefresh) {
                 this.requestConfig.logger.info(
@@ -250,12 +250,17 @@ export default class SplidClient {
               }
               break;
           }
+          if (axiosErr.code === 'ERR_NETWORK') {
+            this.requestConfig.logger.error(
+              'request failed due to network error'
+            );
+            throw err;
+          }
         }
         this.requestConfig.logger.error(
           'request failed:',
           JSON.stringify(err, null, 2)
         );
-
         throw err;
       });
     };

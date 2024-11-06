@@ -61,7 +61,7 @@ const getEntryDescription = (
   entry: SplidJs.Entry,
   members: SplidJs.Person[]
 ) => {
-  const primaryPayer = members.find((i) => i.GlobalId === entry.primaryPayer);
+  const primaryPayer = members.find((i) => i.GlobalId === entry.primaryPayer)!;
 
   for (const item of entry.items) {
     const totalAmount = item.AM;
@@ -70,7 +70,7 @@ const getEntryDescription = (
 
     const profiteers = Object.entries(userIdToShareMap).map(
       ([userId, share]) => {
-        const user = members.find((i) => i.GlobalId === userId);
+        const user = members.find((i) => i.GlobalId === userId)!;
 
         const shareText = formatCurrency(
           totalAmount * share,
