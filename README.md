@@ -1,9 +1,12 @@
 # Splid.Js
 
 a feature-complete typescript client for the Splid (https://splid.app) API.
-some features like member balances, settling up, viewing expenditure statistics, and searching expenses are computed client side in the Splid app and are not included in this package.
+Splid is a free mobile app for keeping track of expenses among friend groups.
+this package is not officially associated with Splid.
 
-last updated Nov 5 2024
+none of the functionality has been tested for currencies other than `EUR`
+
+last updated Nov 6 2024
 
 ## Install
 
@@ -20,21 +23,21 @@ npm install splid-js
 import { SplidClient } from 'splid-js';
 
 async function main() {
-  const client = new SplidClient();
+  const splid = new SplidClient();
 
   const inviteCode = 'PWJ E2B P7A';
 
-  const groupRes = await client.group.getByInviteCode(inviteCode);
+  const groupRes = await splid.group.getByInviteCode(inviteCode);
 
-  const groupInfoRes = await client.groupInfo.getByGroup(
+  const groupInfoRes = await splid.groupInfo.getByGroup(
     groupRes.result.objectId
   );
 
-  const entriesRes = await client.entry.getByGroup(groupRes.result.objectId);
+  const entriesRes = await splid.entry.getByGroup(groupRes.result.objectId);
 
-  const membersRes = await client.person.getByGroup(groupRes.result.objectId);
+  const membersRes = await splid.person.getByGroup(groupRes.result.objectId);
 
-  const expensesAndPayments = await client.entry.getByGroup(
+  const expensesAndPayments = await splid.entry.getByGroup(
     groupRes.result.objectId
   );
 }
@@ -42,7 +45,7 @@ main();
 ```
 
 ```typescript
-// using the returned data
+// parsing the returned data
 import { SplidClient } from 'splid-js';
 
 const formatCurrency = (amount: number, currencyCode: string) => {
@@ -89,19 +92,19 @@ const getEntryDescription = (
 };
 
 async function main() {
-  const client = new SplidClient();
+  const splid = new SplidClient();
 
   const inviteCode = 'PWJ E2B P7A';
 
-  const groupRes = await client.group.getByInviteCode(inviteCode);
+  const groupRes = await splid.group.getByInviteCode(inviteCode);
 
-  const groupInfoRes = await client.groupInfo.getByGroup(
+  const groupInfoRes = await splid.groupInfo.getByGroup(
     groupRes.result.objectId
   );
 
-  const entriesRes = await client.entry.getByGroup(groupRes.result.objectId);
+  const entriesRes = await splid.entry.getByGroup(groupRes.result.objectId);
 
-  const membersRes = await client.person.getByGroup(groupRes.result.objectId);
+  const membersRes = await splid.person.getByGroup(groupRes.result.objectId);
 
   for (const entry of entriesRes.result.results) {
     console.log(getEntryDescription(entry, membersRes.result.results));
@@ -112,8 +115,8 @@ main();
 
 ```typescript
 // calculating members balances and suggested payments
-const people = await client.person.getAllByGroup(groupId);
-const entries = await client.entry.getAllByGroup(groupId);
+const people = await splid.person.getAllByGroup(groupId);
+const entries = await splid.entry.getAllByGroup(groupId);
 
 const balance = SplidClient.getBalance(people, entries);
 const suggestedPayments = SplidClient.getSuggestedPayments(balance);
@@ -121,10 +124,7 @@ const suggestedPayments = SplidClient.getSuggestedPayments(balance);
 
 ```typescript
 // updating group properties
-
-const groupInfoRes = await client.groupInfo.getByGroup(
-  groupRes.result.objectId
-);
+const groupInfoRes = await splid.groupInfo.getByGroup(groupId);
 
 const groupInfo = groupInfoRes.result.results[0];
 
@@ -136,56 +136,52 @@ groupInfo.currencyRates.EUR = 5;
 
 groupInfo.defaultCurrencyCode = 'EUR';
 
-await client.groupInfo.set(groupInfo);
+await splid.groupInfo.set(groupInfo);
 ```
 
 ```typescript
 // updating group wallpaper (NodeJs)
-
 import fs from 'fs';
 
 const file = await fs.promises.readFile('image.png');
 
-const uploadRes = await client.file.upload(file);
+const uploadRes = await splid.file.upload(file);
 
 groupInfo.wallpaperID = uploadRes.dataID;
 ```
 
 ```typescript
 // updating person properties
-
-const membersRes = await client.person.getByGroup(groupRes.result.objectId);
+const membersRes = await splid.person.getByGroup(groupId);
 
 const linus = membersRes.result.results.find((i) => i.name === 'Linus');
 
 linus.name = 'Alex';
 linus.initials = 'A';
 
-await client.person.set(linus);
+await splid.person.set(linus);
 ```
 
 ```typescript
 // updating entry properties
+const entriesRes = await splid.entry.getByGroup(groupId);
 
-const membersRes = await client.person.getByGroup(groupRes.result.objectId);
+const pizzaEntries = entriesRes.result.results.filter((i) =>
+  i.title.toLowerCase().includes('pizza')
+);
 
-const linus = membersRes.result.results.find((i) => i.name === 'Linus');
-
-linus.name = 'Alex';
-linus.initials = 'A';
-
-await client.person.set(linus);
+await splid.batch((b) =>
+  pizzaEntries.map((i) => {
+    i.category = {
+      originalName: 'Italian Food',
+      type: 'custom',
+    };
+    return b.entry.set(i);
+  })
+);
 ```
 
 ```typescript
 // creating a group
-
-await client.group.create('🎉 Ramber Zamber', [
-  {
-    name: 'Linus',
-  },
-  {
-    name: 'Lauren',
-  },
-]);
+await splid.group.create('🎉 Ramber Zamber', ['Linus', 'Laurin', 'Oskar']);
 ```
