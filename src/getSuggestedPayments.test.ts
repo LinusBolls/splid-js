@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { getSuggestedPayments } from './getSuggestedPayments';
 
-const balance = (balance: number) => ({ payedFor: balance, payedBy: 0 });
+const balance = (balance: number) => ({
+  payedFor: balance,
+  payedBy: 0,
+  balance: '',
+});
 
-const payment = (from: string, to: string, amount: number) => ({
+const payment = (from: string, to: string, amount: string) => ({
   from,
   to,
   amount,
@@ -16,7 +20,7 @@ describe('getSuggestedPayments', () => {
         linus: balance(10),
         laurin: balance(-10),
       })
-    ).toEqual([payment('laurin', 'linus', 10)]);
+    ).toEqual([payment('laurin', 'linus', '10.00')]);
 
     expect(
       getSuggestedPayments({
@@ -25,8 +29,8 @@ describe('getSuggestedPayments', () => {
         leonard: balance(-20),
       })
     ).toEqual([
-      payment('leonard', 'linus', 10),
-      payment('leonard', 'laurin', 10),
+      payment('leonard', 'linus', '10.00'),
+      payment('leonard', 'laurin', '10.00'),
     ]);
   });
 
@@ -39,9 +43,9 @@ describe('getSuggestedPayments', () => {
         linus: balance(-0.7550000000000239),
       })
     ).toEqual([
-      payment('lukas', 'institut', 2.04),
-      payment('jannis', 'institut', 0.37),
-      payment('linus', 'institut', 0.76),
+      payment('lukas', 'institut', '2.04'),
+      payment('jannis', 'institut', '0.37'),
+      payment('linus', 'institut', '0.76'),
     ]);
   });
 
