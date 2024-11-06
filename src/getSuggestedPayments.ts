@@ -1,34 +1,32 @@
+import { Balance } from './getBalance';
 import { roundToNDigits } from './toFixed';
 
-type Account = {
-  payedFor: number;
-  payedBy: number;
-};
-
-type SuggestedPayment = {
+export type SuggestedPayment = {
   from: string;
   to: string;
-  amount: number;
+  amount: string;
 };
 
-export function getSuggestedPayments(
-  accounts: Record<string, Account>
-): SuggestedPayment[] {
-  // Separate positive and negative balances
+export type SuggestedPayments = SuggestedPayment[];
+
+/**
+ * not tested for currencies other than `EUR`.
+ */
+export const getSuggestedPayments = (balance: Balance): SuggestedPayment[] => {
   const positiveBalances: { id: string; balance: number }[] = [];
   const negativeBalances: { id: string; balance: number }[] = [];
 
-  // Sort accounts by balance
-  for (const [id, { payedFor, payedBy }] of Object.entries(accounts)) {
+  // sort accounts into negative and positive balances
+  for (const [id, { payedFor, payedBy }] of Object.entries(balance)) {
     const balance = payedFor - payedBy;
 
     if (balance > 0) {
       positiveBalances.push({ id, balance });
     } else if (balance < 0) {
-      negativeBalances.push({ id, balance: -balance }); // convert to positive for easy processing
+      // convert to positive for easy processing
+      negativeBalances.push({ id, balance: -balance });
     }
   }
-
   const payments: SuggestedPayment[] = [];
 
   let posIndex = 0;
@@ -42,23 +40,20 @@ export function getSuggestedPayments(
     const negative = negativeBalances[negIndex];
     const amount = Math.min(positive.balance, negative.balance);
 
-    // Record the payment
-    if (roundToNDigits(amount, 2) > 0) {
+    const isLargerThanZero = roundToNDigits(amount, 2) > 0;
+
+    if (isLargerThanZero) {
       payments.push({
         from: negative.id,
         to: positive.id,
-        amount: roundToNDigits(amount, 2),
+        amount: amount.toFixed(2),
       });
     }
-
-    // Adjust balances
     positive.balance -= amount;
     negative.balance -= amount;
 
-    // Move to the next account if balance is settled
     if (positive.balance === 0) posIndex++;
     if (negative.balance === 0) negIndex++;
   }
-
   return payments;
-}
+};

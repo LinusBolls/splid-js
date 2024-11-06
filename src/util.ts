@@ -27,6 +27,11 @@ export const getInitials = (name: string): string =>
 export const dedupeByGlobalId = <T extends { GlobalId: string }>(
   entries: T[]
 ): T[] =>
-  entries.filter(
-    (i, idx, arr) => arr.findIndex((j) => j.GlobalId === i.GlobalId) === idx
-  );
+  entries.filter((i, idx, arr) => {
+    if (!i.GlobalId)
+      throw new Error(
+        `SplidClient.dedupeByGlobalId: item is missing "GlobalId" field`
+      );
+
+    return arr.findIndex((j) => j.GlobalId === i.GlobalId) === idx;
+  });

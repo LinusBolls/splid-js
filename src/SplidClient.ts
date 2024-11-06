@@ -8,6 +8,7 @@ import { SplidError } from './splidErrors';
 import { Person } from './types/person';
 import { Entry } from './types/entry';
 import { getSuggestedPayments } from './getSuggestedPayments';
+import { getBalance } from './getBalance';
 import { toFixed } from './toFixed';
 
 export interface SplidClientOptions {
@@ -60,124 +61,6 @@ export default class SplidClient {
     };
     return constantHeaders;
   }
-  balance = {
-    /**
-     * requests all necessary data and calculates the group member's balances based on the expenses and payments.
-     *
-     * might be off of the results of the Splid App by a single digit in some cases (single cent).
-     *
-     * not tested for currencies other than `EUR`.
-     */
-    getByGroup: async function (groupId: string): Promise<{
-      balance: Record<
-        string,
-        {
-          balance: string;
-        }
-      >;
-      suggestedPayments: { from: string; to: string; amount: number }[];
-    }> {
-      let isEntriesFinished = false;
-
-      let entries: Entry[] = [];
-
-      while (!isEntriesFinished) {
-        const res = await this.entry.getByGroup(groupId, entries.length);
-
-        entries = entries.concat(res.result.results);
-
-        if (res.result.results.length < 100) {
-          isEntriesFinished = true;
-        }
-      }
-
-      let isPeopleFinished = false;
-
-      let people: Person[] = [];
-
-      while (!isPeopleFinished) {
-        const res = await this.person.getByGroup(groupId, people.length);
-
-        people = people.concat(res.result.results);
-
-        if (res.result.results.length < 100) {
-          isPeopleFinished = true;
-        }
-      }
-
-      let balance = people.reduce<
-        Record<
-          string,
-          {
-            person: any;
-            payedFor: number;
-            payedBy: number;
-            balance: string;
-          }
-        >
-      >((obj, i) => {
-        obj[i.GlobalId] = {
-          person: i,
-          payedFor: 0,
-          payedBy: 0,
-          balance: '',
-        };
-        return obj;
-      }, {});
-
-      for (const entry of dedupeByGlobalId(entries)) {
-        if (entry.isDeleted) continue;
-
-        // payments work the same as expenses, we can treat them the same
-
-        if (!balance[entry.primaryPayer])
-          throw new Error(
-            `SplidClient.balance.getByGroup: failed to resolve primary payer with id "${entry.primaryPayer}"`
-          );
-
-        for (const [id, amount] of Object.entries(
-          entry.secondaryPayers ?? {}
-        )) {
-          if (!balance[id])
-            throw new Error(
-              `SplidClient.balance.getByGroup: failed to resolve secondary payer with id "${id}"`
-            );
-
-          balance[id].payedFor += amount;
-          balance[entry.primaryPayer].payedFor -= amount;
-        }
-        for (const item of entry.items) {
-          balance[entry.primaryPayer].payedFor += item.AM;
-
-          for (const [id2, percOrShare] of Object.entries(item.P.P)) {
-            if (!balance[id2])
-              throw new Error(
-                `SplidClient.balance.getByGroup: failed to resolve profiteer with id "${id2}"`
-              );
-
-            balance[id2].payedBy += item.AM * percOrShare;
-          }
-        }
-      }
-
-      for (const person of Object.values(balance)) {
-        person.balance = toFixed(person.payedBy - person.payedFor);
-      }
-
-      return {
-        balance,
-        suggestedPayments: getSuggestedPayments(balance),
-      };
-    }.bind(this) as (groupId: string) => Promise<{
-      balance: Record<
-        string,
-        {
-          balance: string;
-        }
-      >;
-      suggestedPayments: { from: string; to: string; amount: number }[];
-    }>,
-  };
   group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
   };
@@ -259,4 +142,8 @@ export default class SplidClient {
     };
     return newF;
   }
+  static getBalance = getBalance;
+  static getSuggestedPayments = getSuggestedPayments;
+  static dedupeByGlobalId = dedupeByGlobalId;
+  static getRoundedBalance = toFixed;
 }

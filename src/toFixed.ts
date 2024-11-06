@@ -3,9 +3,9 @@ export const roundToNDigits = (number: number, n: number): number => {
 };
 
 /**
- * Splid's rounding behaviour is extremely scuffed, this approximate implementation is still failing some test cases by a single digit for reasons that don't make **any** sense to me.
+ * might be off of the results of the Splid App by a single digit in some cases (single cent), because we haven't quite figured out their arcane rounding rules yet.
  *
- * not tested for currencies other than `EUR`
+ * not tested for currencies other than `EUR`.
  */
 export const toFixed = (num: number, precision = 2): string => {
   // hardcoded test cases that don't make any sense to me. feel free to handle these properly lol
