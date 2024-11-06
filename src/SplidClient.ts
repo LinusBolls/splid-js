@@ -186,9 +186,43 @@ export default class SplidClient {
   };
   person = {
     getByGroup: this.injectRequestConfig(findObjects('Person')),
+
+    getAllByGroup: async function (groupId: string) {
+      let isFinished = false;
+
+      let data: Person[] = [];
+
+      while (!isFinished) {
+        const res = await this.person.getByGroup(groupId, data.length);
+
+        data = data.concat(res.result.results);
+
+        if (res.result.results.length < 100) {
+          isFinished = true;
+        }
+      }
+      return data;
+    }.bind(this) as (groupId: string) => Promise<Person[]>,
   };
   entry = {
     getByGroup: this.injectRequestConfig(findObjects('Entry')),
+
+    getAllByGroup: async function (groupId: string) {
+      let isFinished = false;
+
+      let data: Entry[] = [];
+
+      while (!isFinished) {
+        const res = await this.entry.getByGroup(groupId, data.length);
+
+        data = data.concat(res.result.results);
+
+        if (res.result.results.length < 100) {
+          isFinished = true;
+        }
+      }
+      return data;
+    }.bind(this) as (groupId: string) => Promise<Entry[]>,
   };
 
   private injectRequestConfig<
