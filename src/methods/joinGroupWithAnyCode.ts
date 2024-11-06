@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { RequestConfig } from '../requestConfig';
 
 export type JoinGroupWithCode400Response =
@@ -7,13 +6,13 @@ export type JoinGroupWithCode400Response =
 
 export type JoinGroupWithAnyCodeResponse = {
   result: {
-    objectId: 'LLTvQ7oHPI';
+    objectId: string;
     /**
-     * the invite code for this group is "PWJE2BP7K"
+     * the invite code used to join the group
      */
-    shortCode: 'PWJE2B';
-    extendedShortCode: 'PWJE2BP7K9';
-    longCode: 'jaW3PQ9KAqgfe1DZmx9ysCJhrZx5ZTxmdfpx4W5jZBiTcSy7C1hIbaL7Iyk3lQne';
+    shortCode: string;
+    extendedShortCode: string;
+    longCode: string;
   };
 };
 

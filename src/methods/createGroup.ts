@@ -6,10 +6,13 @@ import { UpdateGroupResponse } from './updateGroup';
 
 export interface CreateGroupRawResponse {
   result: {
-    code: 'UVFP588H7';
-    longCode: 'R6sjlghj8lPm14IGjMkJdEFjPUPYKemcWpwbkrRtDezSQprVAdwGDkEnnKuQoeo8';
-    extendedShortCode: 'UVFP588H7L';
-    objectId: 'oCCCOtA24J';
+    /**
+     * the invite code used to join the group
+     */
+    code: string;
+    longCode: string;
+    extendedShortCode: string;
+    objectId: string;
   };
 }
 

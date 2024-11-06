@@ -61,7 +61,7 @@ export interface Entry {
   group: {
     __type: 'Pointer';
     className: '_User';
-    objectId: 'QfQhx0XSSc';
+    objectId: string;
   };
   items: EntryItem[];
   isPayment: boolean;
@@ -69,7 +69,7 @@ export interface Entry {
   currencyCode: CurrencyCode;
   createdAt: IsoTime;
   updatedAt: IsoTime;
-  objectId: 'KITH5S6HmD';
+  objectId: string;
   __type: 'Object';
   className: 'Entry';
 
