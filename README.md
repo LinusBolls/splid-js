@@ -1,6 +1,6 @@
 <img src="docs/banner.svg" width="100%" />
 
-# Splid.Js
+# splid.js
 
 a feature-complete typescript client for the Splid (https://splid.app) API.
 Splid is a free mobile app for keeping track of expenses among friend groups.
