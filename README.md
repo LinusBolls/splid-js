@@ -185,3 +185,90 @@ await splid.entry.set(pizzaEntries);
 // creating a group
 await splid.group.create('🎉 Ramber Zamber', ['Linus', 'Laurin', 'Oskar']);
 ```
+
+```typescript
+// creating a basic expense
+await splid.entry.expense.create(
+  {
+    groupId,
+    payers: [linus.GlobalId],
+    title: 'döner',
+  },
+  {
+    amount: 10,
+    // equivalent to equivalent to { [laurin.GlobalId]: 0.5, [oskar.GlobalId]: 0.5 }
+    profiteers: [laurin.GlobalId, oskar.GlobalId],
+  }
+);
+```
+
+```typescript
+// creating an expense with multiple items
+await splid.entry.expense.create(
+  {
+    groupId,
+    payers: [linus.GlobalId],
+    title: 'shopping spree 😌',
+  },
+  [
+    {
+      title: 'gucci belt',
+      amount: 10,
+      profiteers: [laurin.GlobalId],
+    },
+    {
+      title: 'drippy hat',
+      amount: 15,
+      profiteers: [oskar.GlobalId],
+    },
+  ]
+);
+```
+
+```typescript
+// creating an expense with multiple payers (both pay half)
+await splid.entry.expense.create(
+  {
+    groupId,
+    // equivalent to { [linus.GlobalId]: 5, [oskar.GlobalId]: 5 }
+    payers: [linus.GlobalId, oskar.GlobalId],
+    title: 'döner',
+  },
+  {
+    amount: 10,
+    profiteers: [linus.GlobalId, oskar.GlobalId],
+  }
+);
+```
+
+```typescript
+// creating an expense with unevenly split payers (oskar pays 3€)
+await splid.entry.expense.create(
+  {
+    groupId,
+    // equivalent to { [linus.GlobalId]: 7, [oskar.GlobalId]: 3 }
+    payers: [linus.GlobalId, { id: oskar.GlobalId, amount: 3 }],
+    title: 'shopping',
+  },
+  {
+    amount: 10,
+    profiteers: [laurin.GlobalId],
+  }
+);
+```
+
+```typescript
+// creating an expense with unevenly split profiteers (oskar owes 2.25€)
+await splid.entry.expense.create(
+  {
+    groupId,
+    payers: [linus.GlobalId],
+    title: 'shopping',
+  },
+  {
+    amount: 10,
+    // equivalent to { [linus.GlobalId]: 3 / 4, [oskar.GlobalId]: 1 / 4 }
+    profiteers: [linus.GlobalId, { id: oskar.GlobalId, share: 1 / 4 }],
+  }
+);
+```
