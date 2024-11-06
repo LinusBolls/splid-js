@@ -48,31 +48,37 @@ main();
 // parsing the returned data
 import { SplidClient } from 'splid-js';
 
-const formatCurrency = (amount: number, currencyCode: string) => {
-  return (
-    amount.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }) + currencyCode
-  );
+const formatCurrency = (amount: number, currency: string) => {
+  return amount.toLocaleString(undefined, {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
 const getEntryDescription = (
   entry: SplidJs.Entry,
   members: SplidJs.Person[]
 ) => {
-  const primaryPayer = members.find((j) => j.GlobalId === entry.primaryPayer);
+  const primaryPayer = members.find((i) => i.GlobalId === entry.primaryPayer);
 
   for (const item of entry.items) {
     const totalAmount = item.AM;
+    // a map of a userId to their share (how much they profit from the expense). the shares are floats between 0 and 1 and their sum is exactly 1.
+    const userIdToShareMap = item.P.P;
 
-    const profiteers = Object.entries(item.P.P).map(([userId, share]) => {
-      const user = members.find((j) => j.GlobalId === userId);
+    const profiteers = Object.entries(userIdToShareMap).map(
+      ([userId, share]) => {
+        const user = members.find((i) => i.GlobalId === userId);
 
-      const shareText = formatCurrency(totalAmount * share, entry.currencyCode);
-
-      return user.name + ' (' + shareText + ')';
-    });
+        const shareText = formatCurrency(
+          totalAmount * share,
+          entry.currencyCode
+        );
+        return user.name + ' (' + shareText + ')';
+      }
+    );
     const profiteersText = profiteers.join(', ');
 
     const totalText = formatCurrency(totalAmount, entry.currencyCode);

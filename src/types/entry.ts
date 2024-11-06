@@ -9,7 +9,7 @@ export type EntryItem = {
   AM: number;
   P: {
     /**
-     * a map of a userId to their share. the shares are floats between 0 and 1 and their sum is exactly 1.
+     * a map of a userId to their share (how much they profit from the expense). the shares are floats between 0 and 1 and their sum is exactly 1.
      */
     P: UseridToShareMap;
     /**

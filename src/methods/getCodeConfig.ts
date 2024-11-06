@@ -3,7 +3,7 @@ import { RequestConfig } from '../requestConfig';
 export interface GetCodeConfigResponse {
   result: {
     type: 'short';
-    /** at the time of writing this is `9` for both devices */
+    /** at the time of writing, this is always `9` for both devices */
     length: number;
   };
 }

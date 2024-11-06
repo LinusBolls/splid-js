@@ -29,17 +29,40 @@ import { createPerson } from './methods/createPerson';
 import { BatchClient } from './BatchClient';
 
 export interface SplidClientOptions {
+  /**
+   * by default, the client automatically switches to a new installation id if we hit a rate limit with the Splid API
+   */
   disableAutomaticInstallationIdRefresh?: boolean;
+  /**
+   * used for the `x-parse-installation-id` header when making requests to the Splid API.
+   *
+   * changing this resets any rate limits that may be active
+   */
   installationId?: string;
 
+  /**
+   * used for the `x-parse-application-id` header when making requests to the Splid API
+   */
   parseApplicationId?: string;
+  /**
+   * used for the `x-parse-client-key` header when making requests to the Splid API
+   */
   parseClientKey?: string;
 }
 export default class SplidClient {
   private requestConfig: RequestConfig;
+  /**
+   * by default, the client automatically switches to a new installation id if we hit a rate limit with the Splid API
+   */
   private disableAutomaticInstallationIdRefresh: boolean;
 
+  /**
+   * used for the `x-parse-application-id` header when making requests to the Splid API
+   */
   public parseApplicationId: string;
+  /**
+   * used for the `x-parse-client-key` header when making requests to the Splid API
+   */
   public parseClientKey: string;
 
   constructor(options?: SplidClientOptions) {
@@ -62,13 +85,24 @@ export default class SplidClient {
     this.parseClientKey =
       options?.parseClientKey ?? '4Z29DJvRGdVnB5dcTvDTTG01fbkITxvcPCPOt21M';
   }
+  /**
+   * used for the `x-parse-installation-id` header when making requests to the Splid API.
+   *
+   * changing this resets any rate limits that may be active
+   */
   public get installationId() {
     return this.requestConfig.installationId;
   }
-  setInstallationId(installationId: string) {
+  /**
+   * resets any rate limits that may be active
+   */
+  public setInstallationId(installationId: string) {
     this.requestConfig.installationId = installationId;
   }
-  setRandomInstallationId() {
+  /**
+   * resets any rate limits that may be active
+   */
+  public setRandomInstallationId() {
     this.requestConfig.installationId = this.requestConfig.randomUUID();
   }
 
@@ -94,17 +128,22 @@ export default class SplidClient {
     };
     return constantHeaders;
   }
-  getCodeConfig = this.injectRequestConfig(getCodeConfig);
-  group = {
+  /**
+   * the Splid App dynamically configures the length an invite code needs to have from the backend, presumably so they could seamlessly switch to longer codes should they run into limits in the future.
+   *
+   * at the time of writing, the length of invite codes is always `9`.
+   */
+  public getCodeConfig = this.injectRequestConfig(getCodeConfig);
+  public group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
     create: this.injectRequestConfig(createGroup),
   };
-  groupInfo = {
+  public groupInfo = {
     getByGroup: this.injectRequestConfig(findObjects('GroupInfo')),
 
     set: this.injectRequestConfig(wrapRequestObject(updateGroup)),
   };
-  person = {
+  public person = {
     create: this.injectRequestConfig(wrapRequestObject(createPerson)),
     getByGroup: this.injectRequestConfig(findObjects('Person')),
 
@@ -127,7 +166,7 @@ export default class SplidClient {
 
     set: this.injectRequestConfig(wrapRequestObject(updatePerson)),
   };
-  entry = {
+  public entry = {
     set: this.injectRequestConfig(wrapRequestObject(updateEntry)),
     getByGroup: this.injectRequestConfig(findObjects('Entry')),
 
@@ -155,7 +194,12 @@ export default class SplidClient {
     },
   };
 
-  file = {
+  public file = {
+    /**
+     * uploads a file to the Splid API.
+     *
+     * at the time of writing, this is only used for group wallpapers.
+     */
     upload: this.injectRequestConfig(uploadFile),
   };
 
