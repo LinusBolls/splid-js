@@ -111,6 +111,15 @@ main();
 ```
 
 ```typescript
+// calculating members balances and suggested payments
+const people = await client.person.getAllByGroup(groupId);
+const entries = await client.entry.getAllByGroup(groupId);
+
+const balance = SplidClient.getBalance(people, entries);
+const suggestedPayments = SplidClient.getSuggestedPayments(balance);
+```
+
+```typescript
 // updating group properties
 
 const groupInfoRes = await client.groupInfo.getByGroup(
