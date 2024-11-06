@@ -13,12 +13,23 @@ export type EntryItem = {
      */
     P: UseridToShareMap;
     /**
-     * observed to be always 0 except for when `SS` is defined, in which case it is 1
+     * **this field is not relevant for calculating the balance**
+     *
+     * when assigning the people who profit from an expense, if you scroll all the way to the right, there is the option to toggle between "Percent" and "Share" ("Percent" being the default).
+     *
+     * this field acts as a boolean that indicates whether the expense is in "Share" mode.
+     *
+     * when this field is set to `1`, the `SS` field is defined.
      */
     PT: number;
     /**
-     * TODO: research this
-     * extremely rare, observed as 1, 8, 15
+     * **this field is not relevant for calculating the balance**
+     *
+     * when assigning the people who profit from an expense, if you scroll all the way to the right, there is the option to toggle between "Percent" and "Share" ("Percent" being the default).
+     *
+     * this field indicates the total amount of shares the expense is split by. it's only used for visually displaying the amounts of shares to the user.
+     *
+     * this field is defined when the `PT` field is set to `1`.
      */
     SS?: number;
   };
@@ -33,16 +44,14 @@ export type EntryItem = {
  */
 export interface Entry {
   UpdateInstallationID: Uuid;
+  /** there are edge cases in the Splid API where it will return multiple copies of the same entry, which is not desired. you should de-duplicate these by their `GlobalId` when you're e.g. calculating the balance. */
   GlobalId: EntryId;
   /**
    * freetext, e.g. "Train tickets".
    * doesn't exist if `isPayment: true`
    */
   title?: string;
-  /**
-   * TODO: research this
-   */
-  secondaryPayers?: {};
+  secondaryPayers?: Record<string, number>;
   primaryPayer: UserId;
   createdGlobally: {
     __type: 'Date';

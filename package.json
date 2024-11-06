@@ -21,7 +21,7 @@
     "dev": "microbundle watch",
     "format": "npx prettier --write .",
     "lint": "npx prettier --check .",
-    "test": "tsc --noEmit",
+    "test": "tsc --noEmit && npx vitest",
     "prepublishOnly": "npm run format && npm run build"
   },
   "exports": {
@@ -43,7 +43,8 @@
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/node": "^22.0.2",
     "microbundle": "^0.15.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.4"
   },
   "dependencies": {
     "axios": "^1.6.2"
