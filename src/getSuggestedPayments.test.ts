@@ -58,4 +58,86 @@ describe('getSuggestedPayments', () => {
       })
     ).toEqual([]);
   });
+
+  return;
+
+  it('passes advanced cases (porto)', () => {
+    expect(
+      getSuggestedPayments({
+        bolls: {
+          payedFor: 695,
+          payedBy: 542.0364395604396,
+          balance: '152.96',
+        },
+        josi: {
+          payedFor: 333.51,
+          payedBy: 194.92747252747253,
+          balance: '138.58',
+        },
+        robert: {
+          payedFor: 161.6,
+          payedBy: 230.6006391941392,
+          balance: '-69.00',
+        },
+        fiona: {
+          payedFor: 50.33,
+          payedBy: 169.38461538461536,
+          balance: '-119.05',
+        },
+        moritz: {
+          payedFor: 153.81939377289376,
+          payedBy: 163.8473058608058,
+          balance: '-10.03',
+        },
+        schicke: {
+          payedFor: 80,
+          payedBy: 163.36747252747253,
+          balance: '-83.37',
+        },
+        jannis: {
+          payedFor: 199.6396758241758,
+          payedBy: 199.6466391941392,
+          balance: '-0.01',
+        },
+        ole: {
+          payedFor: 209.3,
+          payedBy: 219.39544871794874,
+          balance: '-10.10',
+        },
+      }).sort()
+    ).toEqual(
+      [
+        {
+          from: 'fiona',
+          to: 'josi',
+          amount: '119.05',
+        },
+        {
+          from: 'moritz',
+          to: 'josi',
+          amount: '10.03',
+        },
+        {
+          from: 'schicke',
+          to: 'josi',
+          amount: '9.50',
+        },
+        {
+          from: 'schicke',
+          to: 'bolls',
+          amount: '73.87',
+        },
+        {
+          from: 'ole',
+          to: 'bolls',
+          amount: '10.10',
+        },
+        {
+          from: 'robert',
+          to: 'bolls',
+          amount: '69.00',
+        },
+      ].sort()
+    );
+  });
 });
