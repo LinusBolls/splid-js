@@ -16,7 +16,13 @@ export type Balance = Record<string, BalanceItem>;
  *
  * not tested for currencies other than `EUR`.
  */
-export const getBalance = (people: Person[], entries: Entry[]): Balance => {
+export const getBalance = (
+  people: Pick<Person, 'GlobalId'>[],
+  entries: Pick<
+    Entry,
+    'GlobalId' | 'isDeleted' | 'primaryPayer' | 'secondaryPayers' | 'items'
+  >[]
+): Balance => {
   const uniquePeople = dedupeByGlobalId(people);
   const uniqueEntries = dedupeByGlobalId(entries);
 
@@ -63,7 +69,7 @@ export const getBalance = (people: Person[], entries: Entry[]): Balance => {
   }
 
   for (const person of Object.values(balance)) {
-    person.balance = toFixed(person.payedBy - person.payedFor);
+    person.balance = toFixed(person.payedFor - person.payedBy);
   }
   return balance;
 };

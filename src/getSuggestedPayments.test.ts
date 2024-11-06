@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { getSuggestedPayments } from './getSuggestedPayments';
+import { toFixed } from './toFixed';
 
 const balance = (balance: number) => ({
   payedFor: balance,
   payedBy: 0,
-  balance: '',
+  balance: toFixed(balance),
 });
 
 const payment = (from: string, to: string, amount: string) => ({
