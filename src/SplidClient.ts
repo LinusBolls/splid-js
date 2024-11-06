@@ -2,9 +2,14 @@ import axios, { AxiosError } from 'axios';
 import { RequestConfig } from './requestConfig';
 import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
 import { ScopedLogger } from './logging';
-import { FuncWithoutConfigArg } from './util';
+import { dedupeByGlobalId, FuncWithoutConfigArg } from './util';
 import { findObjects } from './methods/findObjects';
 import { SplidError } from './splidErrors';
+import { Person } from './types/person';
+import { Entry } from './types/entry';
+import { getSuggestedPayments } from './getSuggestedPayments';
+import { getBalance } from './getBalance';
+import { toFixed } from './toFixed';
 
 export interface SplidClientOptions {
   disableAutomaticInstallationIdRefresh?: boolean;
@@ -64,9 +69,43 @@ export default class SplidClient {
   };
   person = {
     getByGroup: this.injectRequestConfig(findObjects('Person')),
+
+    getAllByGroup: async function (groupId: string) {
+      let isFinished = false;
+
+      let data: Person[] = [];
+
+      while (!isFinished) {
+        const res = await this.person.getByGroup(groupId, data.length);
+
+        data = data.concat(res.result.results);
+
+        if (res.result.results.length < 100) {
+          isFinished = true;
+        }
+      }
+      return data;
+    }.bind(this) as (groupId: string) => Promise<Person[]>,
   };
   entry = {
     getByGroup: this.injectRequestConfig(findObjects('Entry')),
+
+    getAllByGroup: async function (groupId: string) {
+      let isFinished = false;
+
+      let data: Entry[] = [];
+
+      while (!isFinished) {
+        const res = await this.entry.getByGroup(groupId, data.length);
+
+        data = data.concat(res.result.results);
+
+        if (res.result.results.length < 100) {
+          isFinished = true;
+        }
+      }
+      return data;
+    }.bind(this) as (groupId: string) => Promise<Entry[]>,
   };
 
   private injectRequestConfig<
@@ -103,4 +142,8 @@ export default class SplidClient {
     };
     return newF;
   }
+  static getBalance = getBalance;
+  static getSuggestedPayments = getSuggestedPayments;
+  static dedupeByGlobalId = dedupeByGlobalId;
+  static getRoundedBalance = toFixed;
 }
