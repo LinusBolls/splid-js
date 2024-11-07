@@ -21,10 +21,11 @@ export async function uploadFile(
   config: RequestConfig,
   buffer: Buffer
 ): Promise<UploadFileResponse> {
-  const uploadResponse = await config.httpClient.post<UploadRawFileResponse>(
+  const uploadResponse = await config.fetch(
     config.baseUrl + '/parse/files/file',
-    buffer,
     {
+      method: 'POST',
+      body: buffer,
       headers: {
         ...config.getHeaders(),
         'Content-Type': 'application/octet-stream',
@@ -34,23 +35,28 @@ export async function uploadFile(
 
   const dataID = config.randomUUID();
 
-  const createResponse =
-    await config.httpClient.post<CreateFileWrapperResponse>(
-      config.baseUrl + '/parse/classes/FileWrapper',
-      {
+  const uploadData: UploadRawFileResponse = await uploadResponse.json();
+
+  const createResponse = await config.fetch(
+    config.baseUrl + '/parse/classes/FileWrapper',
+    {
+      method: 'POST',
+      body: JSON.stringify({
         dataID,
         file: {
           __type: 'File',
-          url: uploadResponse.data.url,
-          name: uploadResponse.data.name,
+          url: uploadData.url,
+          name: uploadData.name,
         },
-      },
-      { headers: config.getHeaders() }
-    );
+      }),
+      headers: config.getHeaders(),
+    }
+  );
+  const createData: CreateFileWrapperResponse = await createResponse.json();
 
   return {
     dataID,
-    file: uploadResponse.data,
-    fileWrapper: createResponse.data,
+    file: uploadData,
+    fileWrapper: createData,
   };
 }

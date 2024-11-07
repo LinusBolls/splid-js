@@ -42,12 +42,17 @@ export async function createGroup(
   members: MemberInput[],
   options?: CreateGroupOptions
 ): Promise<CreateGroupResponse> {
-  const groupRes = await config.httpClient.post<CreateGroupRawResponse>(
+  const groupRes = await config.fetch(
     config.baseUrl + '/parse/functions/createGroup',
-    {},
-    { headers: config.getHeaders() }
+    {
+      method: 'POST',
+      body: JSON.stringify({}),
+      headers: config.getHeaders(),
+    }
   );
-  const groupId = groupRes.data.result.objectId;
+  const group: CreateGroupRawResponse = await groupRes.json();
+
+  const groupId = group.result.objectId;
 
   const mappedMembers = members.map((i) =>
     typeof i === 'string' ? { name: i } : i
@@ -89,14 +94,14 @@ export async function createGroup(
     },
   } as const;
 
-  const [groupInfoRes, ...personResponses] = await executeRequestObjects(
-    config,
-    [requestObject, ...persons] as const
-  );
+  const [groupInfo, ...groupMembers] = await executeRequestObjects(config, [
+    requestObject,
+    ...persons,
+  ] as const);
 
   return {
-    group: groupRes.data,
-    groupInfo: groupInfoRes,
-    groupMembers: personResponses as CreatePersonResponse[],
+    group,
+    groupInfo,
+    groupMembers,
   };
 }

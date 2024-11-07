@@ -21,8 +21,6 @@ export const findObjects =
     limit = 100,
     minDate?: Date
   ) => {
-    const url = config.baseUrl + '/parse/functions/findObjects';
-
     const body = {
       className,
       minDate: {
@@ -33,12 +31,16 @@ export const findObjects =
       limit,
       skip,
     };
-    const options = { headers: config.getHeaders() };
 
-    const res = await config.httpClient.post<FindObjectsResponse<ClassName[T]>>(
-      url,
-      body,
-      options
+    const res = await config.fetch(
+      config.baseUrl + '/parse/functions/findObjects',
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: config.getHeaders(),
+      }
     );
-    return res.data;
+    const data: FindObjectsResponse<ClassName[T]> = await res.json();
+
+    return data;
   };

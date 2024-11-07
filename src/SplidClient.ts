@@ -1,5 +1,3 @@
-import axios, { AxiosError } from 'axios';
-
 import { BatchClient } from './BatchClient';
 import { getBalance } from './getBalance';
 import { getSuggestedPayments } from './getSuggestedPayments';
@@ -30,6 +28,7 @@ import { Person } from './types/person';
 import { dedupeByGlobalId, FuncWithoutConfigArg } from './util';
 
 export interface SplidClientOptions {
+  fetch?: typeof fetch;
   /**
    * by default, the client automatically switches to a new installation id if we hit a rate limit with the Splid API
    */
@@ -69,13 +68,21 @@ export default class SplidClient {
   constructor(options?: SplidClientOptions) {
     const randomUUID = () => crypto.randomUUID();
 
+    const fetchImpl = options?.fetch ?? fetch;
+
+    if (!fetchImpl)
+      throw new Error(
+        'SplidClient is based on the fetch API, but no global fetch implementation could be found. this might occur if you are using NodeJs < v18.0.0. please upgrade your runtime or pass a fetch implementation into the SplidClient constructor options.'
+      );
+
     this.requestConfig = {
       baseUrl: 'https://splid.herokuapp.com',
       getHeaders: this.getHeaders.bind(this),
-      httpClient: axios.create(),
+      fetch: fetchImpl,
       logger: new ScopedLogger('splid-js'),
       installationId: options?.installationId ?? randomUUID(),
       randomUUID,
+      assertResponseBody: this.assertResponseBody.bind(this),
     };
 
     this.disableAutomaticInstallationIdRefresh =
@@ -243,36 +250,28 @@ export default class SplidClient {
     return data;
   };
 
+  private assertResponseBody(data: unknown) {
+    if (typeof data === 'object' && data != null && 'error' in data) {
+      if (data.error === SplidError.ACCESS_DENIED_RATE_LIMITED.error) {
+        if (!this.disableAutomaticInstallationIdRefresh) {
+          this.requestConfig.logger.info(
+            'encountered rate limit, switching installation id'
+          );
+          this.setRandomInstallationId();
+
+          return;
+        }
+      }
+      throw new Error(`request failed: ${data.error}`);
+    }
+    return data;
+  }
+
   private injectRequestConfig<
     F extends (requestConfig: RequestConfig, ...args: any[]) => any,
   >(f: F) {
     const newF: FuncWithoutConfigArg<typeof f> = (...args) => {
       return f(this.requestConfig, ...args).catch((err: unknown) => {
-        if ((err as Error).name === 'AxiosError') {
-          const axiosErr = err as AxiosError<
-            (typeof SplidError)[keyof typeof SplidError]
-          >;
-
-          switch (axiosErr.response?.data?.error) {
-            case SplidError.ACCESS_DENIED_RATE_LIMITED.error:
-              if (!this.disableAutomaticInstallationIdRefresh) {
-                this.requestConfig.logger.info(
-                  'encountered rate limit, switching installation id'
-                );
-
-                this.setRandomInstallationId();
-
-                return;
-              }
-              break;
-          }
-          if (axiosErr.code === 'ERR_NETWORK') {
-            this.requestConfig.logger.error(
-              'request failed due to network error'
-            );
-            throw err;
-          }
-        }
         this.requestConfig.logger.error(
           'request failed:',
           JSON.stringify(err, null, 2)

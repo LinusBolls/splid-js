@@ -12,15 +12,15 @@ export const executeRequestObjects = async <T extends RequestObject[]>(
   config: RequestConfig,
   requests: T
 ) => {
-  const url = config.baseUrl + '/parse/batch';
+  const res = await config.fetch(config.baseUrl + '/parse/batch', {
+    method: 'POST',
+    body: JSON.stringify({ requests }),
+    headers: config.getHeaders(),
+  });
 
-  const options = { headers: config.getHeaders() };
-
-  const res = await config.httpClient.post(url, { requests }, options);
-
-  const data = res.data as {
+  const data: {
     [K in keyof T]: IdToResponseTypesMap[T[K]['id']];
-  };
+  } = await res.json();
   return data;
 };
 

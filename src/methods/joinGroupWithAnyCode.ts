@@ -1,8 +1,8 @@
 import { RequestConfig } from '../requestConfig';
+import { SplidError } from '../splidErrors';
 
 export type JoinGroupWithCode400Response =
-  | { code: 141; error: 'Access denied: invalid code' }
-  | { code: 141; error: 'Access denied: too many invalid codes' };
+  (typeof SplidError)[keyof typeof SplidError];
 
 export type JoinGroupWithAnyCodeResponse = {
   result: {
@@ -22,19 +22,17 @@ export async function joinGroupWithAnyCode(
   config: RequestConfig,
   rawCode: string
 ) {
-  const url = config.baseUrl + '/parse/functions/joinGroupWithAnyCode';
-
   const code = removeAllSpaces(rawCode).toUpperCase();
 
-  const body = {
-    code,
-  };
-  const options = { headers: config.getHeaders() };
-
-  const res = await config.httpClient.post<JoinGroupWithAnyCodeResponse>(
-    url,
-    body,
-    options
+  const res = await config.fetch(
+    config.baseUrl + '/parse/functions/joinGroupWithAnyCode',
+    {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+      headers: config.getHeaders(),
+    }
   );
-  return res.data;
+  const data: JoinGroupWithAnyCodeResponse = await res.json();
+
+  return config.assertResponseBody(data);
 }

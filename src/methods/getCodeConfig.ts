@@ -12,16 +12,15 @@ export async function getCodeConfig(
   config: RequestConfig,
   device: 'ios' | 'android'
 ) {
-  const res = await config.httpClient.post<GetCodeConfigResponse>(
+  const res = await config.fetch(
     config.baseUrl + '/parse/functions/getCodeConfig',
     {
-      device,
-    },
-    {
+      method: 'POST',
+      body: JSON.stringify({ device }),
       headers: config.getHeaders(),
     }
   );
-  const data = res.data;
+  const data: GetCodeConfigResponse = await res.json();
 
   return data;
 }
