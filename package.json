@@ -11,7 +11,8 @@
     "splidjs",
     "splid-js",
     "api",
-    "api client"
+    "api client",
+    "sdk"
   ],
   "type": "module",
   "scripts": {
