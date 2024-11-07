@@ -2,6 +2,7 @@ import { CreateExpenseResponse } from './methods/createExpense';
 import { CreateGroupResponse } from './methods/createGroup';
 import { CreatePaymentResponse } from './methods/createPayment';
 import { CreatePersonResponse } from './methods/createPerson';
+import { GetCurrencyRatesResponse } from './methods/getCurrencyRates';
 import { UpdateEntryResponse } from './methods/updateEntry';
 import { UpdateGroupResponse } from './methods/updateGroup';
 import { UpdatePersonResponse } from './methods/updatePerson';
@@ -45,6 +46,7 @@ export interface IdToResponseTypesMap {
   updateEntry: UpdateEntryResponse;
   createGroup: CreateGroupResponse;
   createPerson: CreatePersonResponse;
+  getCurrencyRates: GetCurrencyRatesResponse;
 }
 
 export type RequestObject = {

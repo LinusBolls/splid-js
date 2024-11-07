@@ -10,6 +10,7 @@ import { createPayment } from './methods/createPayment';
 import { createPerson } from './methods/createPerson';
 import { findObjects } from './methods/findObjects';
 import { getCodeConfig } from './methods/getCodeConfig';
+import { getCurrencyRates } from './methods/getCurrencyRates';
 import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
 import { updateEntry } from './methods/updateEntry';
 import { updateGroup } from './methods/updateGroup';
@@ -134,6 +135,14 @@ export default class SplidClient {
    * at the time of writing, the length of invite codes is always `9`.
    */
   public getCodeConfig = this.injectRequestConfig(getCodeConfig);
+  /**
+   * returns the most recent currency exchange rates in form of a map of a currency code to its value in dollars
+   */
+  public getCurrencyRates = this.injectRequestConfig(() =>
+    wrapRequestObject(getCurrencyRates)(this.requestConfig).then(
+      (data) => data[0].success.result
+    )
+  );
   public group = {
     getByInviteCode: this.injectRequestConfig(joinGroupWithAnyCode),
     create: this.injectRequestConfig(createGroup),
@@ -145,6 +154,8 @@ export default class SplidClient {
         (res) => res.result.results[0]
       )
     ),
+    updateCurrencyRates: (groupId: string) =>
+      this.injectRequestConfig((config) => {}),
 
     set: this.injectRequestConfig(wrapRequestObject(updateGroup)),
   };

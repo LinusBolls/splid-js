@@ -1,6 +1,5 @@
 import { sanitizeParseObject } from '../parse';
 import { RequestConfig } from '../requestConfig';
-import { RequestObject } from '../requestObject';
 import { Entry } from '../types/entry';
 import { IsoTime } from '../types/primitives';
 

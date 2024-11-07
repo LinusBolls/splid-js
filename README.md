@@ -121,15 +121,14 @@ main();
 
 ```typescript
 // updating group properties
-const groupInfoRes = await splid.groupInfo.getByGroup(groupId);
-
-const groupInfo = groupInfoRes.result.results[0];
+const groupInfo = await splid.groupInfo.getOneByGroup(groupId);
 
 groupInfo.name = 'Modified Group 🔥';
 
 groupInfo.customCategories.push('Pharmaceuticals 💊');
 
-groupInfo.currencyRates.EUR = 5;
+// setting the currency exchange rates to the most recent values
+groupInfo.currencyRates = await splid.getCurrencyRates();
 
 groupInfo.defaultCurrencyCode = 'EUR';
 
@@ -168,12 +167,57 @@ const pizzaEntries = entries.filter((i) =>
 );
 
 for (const entry of pizzaEntries) {
+  // setting the category of an entry
   entry.category = {
     type: 'custom',
     originalName: 'Italian Food 🍕',
   };
+  // setting the date of an entry
+  if (!entry.date) {
+    entry.date = {
+      __type: 'Date',
+      iso: new Date().toISOString(),
+    };
+  } else {
+    entry.date.iso = new Date().toISOString();
+  }
 }
 await splid.entry.set(pizzaEntries);
+```
+
+```typescript
+// converting all foreign currency entries to the default currency of the group
+
+const foreignCurrencyEntries = expensesAndPayments.filter(
+  (i) => !i.isPayment && i.currencyCode !== groupInfo.defaultCurrencyCode
+);
+
+for (const entry of foreignCurrencyEntries) {
+  const factor =
+    groupInfo.currencyRates[entry.currencyCode] /
+    groupInfo.currencyRates[groupInfo.defaultCurrencyCode];
+
+  entry.currencyCode = groupInfo.defaultCurrencyCode;
+
+  for (const item of entry.items) {
+    item.AM = item.AM * factor;
+  }
+  for (const [payerId, amount] of Object.entries(entry.secondaryPayers ?? {})) {
+    entry.secondaryPayers[payerId] = amount * factor;
+  }
+}
+await splid.entry.set(foreignCurrencyEntries);
+```
+
+```typescript
+// deleting entries
+const entries = await splid.entry.getAllByGroup(groupId);
+
+const entry = entries[0];
+
+entry.isDeleted = true;
+
+await splid.entry.set(entry);
 ```
 
 ```typescript

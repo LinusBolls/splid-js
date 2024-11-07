@@ -80,6 +80,11 @@ export interface Entry {
     originalName: string;
     type: EntryCategory;
   };
+  /** the "Purchased On" date. this is the only date you should manually modify */
+  date?: {
+    __type: 'Date';
+    iso: IsoTime;
+  };
 }
 
 export const EntryCategories = {
