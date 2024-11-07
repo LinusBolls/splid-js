@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { getSuggestedPayments } from './getSuggestedPayments';
 import { toFixed } from './toFixed';
 

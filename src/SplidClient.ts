@@ -1,32 +1,32 @@
 import axios, { AxiosError } from 'axios';
 
-import { RequestConfig } from './requestConfig';
-import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
-import { ScopedLogger } from './logging';
-import { dedupeByGlobalId, FuncWithoutConfigArg } from './util';
-import { findObjects } from './methods/findObjects';
-import { SplidError } from './splidErrors';
-import { Person } from './types/person';
-import { Entry } from './types/entry';
-import { getSuggestedPayments } from './getSuggestedPayments';
+import { BatchClient } from './BatchClient';
 import { getBalance } from './getBalance';
-import { toFixed } from './toFixed';
+import { getSuggestedPayments } from './getSuggestedPayments';
+import { ScopedLogger } from './logging';
 import { createExpense } from './methods/createExpense';
+import { createGroup } from './methods/createGroup';
 import { createPayment } from './methods/createPayment';
+import { createPerson } from './methods/createPerson';
+import { findObjects } from './methods/findObjects';
+import { getCodeConfig } from './methods/getCodeConfig';
+import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
+import { updateEntry } from './methods/updateEntry';
+import { updateGroup } from './methods/updateGroup';
+import { updatePerson } from './methods/updatePerson';
+import { uploadFile } from './methods/uploadFile';
+import { RequestConfig } from './requestConfig';
 import {
   executeRequestObjects,
   IdToResponseTypesMap,
   RequestObject,
   wrapRequestObject,
 } from './requestObject';
-import { updateGroup } from './methods/updateGroup';
-import { updatePerson } from './methods/updatePerson';
-import { updateEntry } from './methods/updateEntry';
-import { uploadFile } from './methods/uploadFile';
-import { getCodeConfig } from './methods/getCodeConfig';
-import { createGroup } from './methods/createGroup';
-import { createPerson } from './methods/createPerson';
-import { BatchClient } from './BatchClient';
+import { SplidError } from './splidErrors';
+import { toFixed } from './toFixed';
+import { Entry } from './types/entry';
+import { Person } from './types/person';
+import { dedupeByGlobalId, FuncWithoutConfigArg } from './util';
 
 export interface SplidClientOptions {
   /**

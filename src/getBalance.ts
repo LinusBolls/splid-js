@@ -1,5 +1,6 @@
 import { toFixed } from './toFixed';
 import { Entry } from './types/entry';
+import { GroupInfo } from './types/groupInfo';
 import { Person } from './types/person';
 import { dedupeByGlobalId } from './util';
 
@@ -25,10 +26,7 @@ export const getBalance = (
     | 'items'
     | 'currencyCode'
   >[],
-  groupInfo?: {
-    currencyRates?: Record<string, number>;
-    defaultCurrencyCode?: string;
-  }
+  groupInfo?: Pick<GroupInfo, 'currencyRates' | 'defaultCurrencyCode'>
 ): Balance => {
   const uniquePeople = dedupeByGlobalId(people);
   const uniqueEntries = dedupeByGlobalId(entries);

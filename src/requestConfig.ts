@@ -1,4 +1,5 @@
 import type { AxiosInstance } from 'axios';
+
 import { Logger } from './logging';
 
 export interface RequestConfig {

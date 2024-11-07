@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { toFixed } from './toFixed';
 
 describe('toFixed', () => {
