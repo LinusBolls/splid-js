@@ -28,6 +28,7 @@ describe('getBalance', () => {
             GlobalId: '#',
             isDeleted: false,
             primaryPayer: 'linus',
+            currencyCode: 'EUR',
             items: [
               {
                 AM: 10,

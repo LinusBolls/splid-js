@@ -6,9 +6,7 @@ a feature-complete typescript client for the Splid (https://splid.app) API.
 Splid is a free mobile app for keeping track of expenses among friend groups.
 this package is not officially associated with Splid.
 
-none of the functionality has been tested for currencies other than `EUR`
-
-last updated Nov 6 2024
+last updated Nov 7 2024
 
 ## Install
 
@@ -33,10 +31,15 @@ async function main() {
 
   const groupId = groupRes.result.objectId;
 
+  const groupInfo = await splid.groupInfo.getOneByGroup(groupId);
   const members = await splid.person.getAllByGroup(groupId);
   const expensesAndPayments = await splid.entry.getAllByGroup(groupId);
 
-  const balance = SplidClient.getBalance(members, expensesAndPayments);
+  const balance = SplidClient.getBalance(
+    members,
+    expensesAndPayments,
+    groupInfo
+  );
   const suggestedPayments = SplidClient.getSuggestedPayments(balance);
 
   console.log(balance, suggestedPayments);

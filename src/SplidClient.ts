@@ -140,6 +140,11 @@ export default class SplidClient {
   };
   public groupInfo = {
     getByGroup: this.injectRequestConfig(findObjects('GroupInfo')),
+    getOneByGroup: this.injectRequestConfig((config, groupId) =>
+      findObjects('GroupInfo')(config, groupId).then(
+        (res) => res.result.results[0]
+      )
+    ),
 
     set: this.injectRequestConfig(wrapRequestObject(updateGroup)),
   };
