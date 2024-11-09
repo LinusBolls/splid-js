@@ -12,13 +12,13 @@ export interface Person {
   group: {
     __type: 'Pointer';
     className: '_User';
-    objectId: 'QfQhx0XSSc';
+    objectId: string;
   };
-  name: string; // e.g. "Daniel" (yes, even when `isDeleted: true`)
-  initials: string; // e.g. "D"
+  name: string;
+  initials: string;
   createdAt: IsoTime;
   updatedAt: IsoTime;
-  objectId: 'Pv2p7KumiG';
+  objectId: string;
   __type: 'Object';
   className: 'Person';
 }

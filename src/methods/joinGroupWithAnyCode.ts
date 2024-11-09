@@ -1,19 +1,18 @@
-import { AxiosError } from 'axios';
 import { RequestConfig } from '../requestConfig';
+import { SplidError } from '../splidErrors';
 
 export type JoinGroupWithCode400Response =
-  | { code: 141; error: 'Access denied: invalid code' }
-  | { code: 141; error: 'Access denied: too many invalid codes' };
+  (typeof SplidError)[keyof typeof SplidError];
 
 export type JoinGroupWithAnyCodeResponse = {
   result: {
-    objectId: 'LLTvQ7oHPI';
+    objectId: string;
     /**
-     * the invite code for this group is "PWJE2BP7K"
+     * the invite code used to join the group
      */
-    shortCode: 'PWJE2B';
-    extendedShortCode: 'PWJE2BP7K9';
-    longCode: 'jaW3PQ9KAqgfe1DZmx9ysCJhrZx5ZTxmdfpx4W5jZBiTcSy7C1hIbaL7Iyk3lQne';
+    shortCode: string;
+    extendedShortCode: string;
+    longCode: string;
   };
 };
 
@@ -23,37 +22,17 @@ export async function joinGroupWithAnyCode(
   config: RequestConfig,
   rawCode: string
 ) {
-  try {
-    const url = config.baseUrl + '/parse/functions/joinGroupWithAnyCode';
+  const code = removeAllSpaces(rawCode).toUpperCase();
 
-    const code = removeAllSpaces(rawCode);
+  const res = await config.fetch(
+    config.baseUrl + '/parse/functions/joinGroupWithAnyCode',
+    {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+      headers: config.getHeaders(),
+    }
+  );
+  const data: JoinGroupWithAnyCodeResponse = await res.json();
 
-    const body = {
-      code,
-    };
-    const options = { headers: config.getHeaders() };
-
-    const res = await config.httpClient.post<JoinGroupWithAnyCodeResponse>(
-      url,
-      body,
-      options
-    );
-    return res.data;
-  } catch (err) {
-    // if (err.name === "AxiosError") {
-
-    //   const axiosErr = err as AxiosError<JoinGroupWithCode400Response>;
-
-    //   if (axiosErr.response.data.error === 'Access denied: too many invalid codes') {
-
-    //     config.logger.error("joinGroupWithAnyCode: rate limited. change your 'x-parse-installation-id' to an arbitrary uuid to reset this.");
-
-    //     throw axiosErr;
-    //   }
-    //   if (axiosErr.response.data.error === 'Access denied: invalid code') {
-    //     return false;
-    //   }
-    // }
-    throw err;
-  }
+  return config.assertResponseBody(data);
 }

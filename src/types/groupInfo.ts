@@ -2,7 +2,7 @@ import { CurrencyCode, GroupId, IsoTime, Uuid } from './primitives';
 
 export interface GroupInfo {
   UpdateInstallationID: Uuid;
-  name: string; // e.g. "La Famiglia"
+  name: string;
   defaultCurrencyCode: CurrencyCode;
   creatorInstallationID: Uuid;
   UpdateID: Uuid;
@@ -18,13 +18,22 @@ export interface GroupInfo {
   group: {
     __type: 'Pointer';
     className: '_User';
-    objectId: 'QfQhx0XSSc';
+    objectId: string;
   };
   createdAt: IsoTime;
   updatedAt: IsoTime;
-  customCategories: string[]; // e.g. [ "Food" ]
+  /**
+   * e.g. [ "Food" ]
+   */
+  customCategories: string[];
   isDeleted: boolean;
-  objectId: 'AL5VHgcVHE';
+  objectId: string;
   __type: 'Object';
   className: 'GroupInfo';
+
+  wallpaperID?:
+    | string
+    | {
+        __op: 'Delete';
+      };
 }

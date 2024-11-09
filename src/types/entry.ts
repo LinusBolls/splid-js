@@ -9,7 +9,7 @@ export type EntryItem = {
   AM: number;
   P: {
     /**
-     * a map of a userId to their share. the shares are floats between 0 and 1 and their sum is exactly 1.
+     * a map of a userId to their share (how much they profit from the expense). the shares are floats between 0 and 1 and their sum is exactly 1.
      */
     P: UseridToShareMap;
     /**
@@ -21,7 +21,7 @@ export type EntryItem = {
      *
      * when this field is set to `1`, the `SS` field is defined.
      */
-    PT: number;
+    PT: 0 | 1;
     /**
      * **this field is not relevant for calculating the balance**
      *
@@ -34,7 +34,7 @@ export type EntryItem = {
     SS?: number;
   };
   /**
-   * freetext, e.g. "Museum", but almost always just an empty string
+   * if the expense consists of multiple item, this is the title of the sub-item
    */
   T?: string;
 };
@@ -61,7 +61,7 @@ export interface Entry {
   group: {
     __type: 'Pointer';
     className: '_User';
-    objectId: 'QfQhx0XSSc';
+    objectId: string;
   };
   items: EntryItem[];
   isPayment: boolean;
@@ -69,7 +69,7 @@ export interface Entry {
   currencyCode: CurrencyCode;
   createdAt: IsoTime;
   updatedAt: IsoTime;
-  objectId: 'KITH5S6HmD';
+  objectId: string;
   __type: 'Object';
   className: 'Entry';
 
@@ -78,6 +78,23 @@ export interface Entry {
      * e.g. "Food"
      */
     originalName: string;
-    type: 'custom' | 'transport' | 'entertainment';
+    type: EntryCategory;
+  };
+  /** the "Purchased On" date. this is the only date you should manually modify */
+  date?: {
+    __type: 'Date';
+    iso: IsoTime;
   };
 }
+
+export const EntryCategories = {
+  ACCOMMODATION: 'accommodation',
+  ENTERTAINMENT: 'entertainment',
+  GROCERIES: 'groceries',
+  RESTAURANTS: 'restaurants',
+  TRANSPORT: 'transport',
+  CUSTOM: 'custom',
+} as const;
+
+export type EntryCategory =
+  (typeof EntryCategories)[keyof typeof EntryCategories];
