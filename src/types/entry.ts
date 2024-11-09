@@ -73,18 +73,35 @@ export interface Entry {
   __type: 'Object';
   className: 'Entry';
 
-  category?: {
-    /**
-     * e.g. "Food"
-     */
-    originalName: string;
-    type: EntryCategory;
-  };
-  /** the "Purchased On" date. this is the only date you should manually modify */
-  date?: {
-    __type: 'Date';
-    iso: IsoTime;
-  };
+  /**
+   * you will never get an entry with `{ __op: 'Delete' }` from the api, but you have to send it to the api like this to clear the field.
+   * setting `{ category: undefined }` will not work.
+   */
+  category?:
+    | {
+        /**
+         * e.g. "Food"
+         */
+        originalName: string;
+        type: EntryCategory;
+      }
+    | {
+        __op: 'Delete';
+      };
+  /**
+   * the "Purchased On" date. this is the only date you should manually modify.
+   *
+   * you will never get an entry with `{ __op: 'Delete' }` from the api, but you have to send it to the api like this to clear the field.
+   * setting `{ date: undefined }` will not work.
+   */
+  date?:
+    | {
+        __type: 'Date';
+        iso: IsoTime;
+      }
+    | {
+        __op: 'Delete';
+      };
 }
 
 export const EntryCategories = {
