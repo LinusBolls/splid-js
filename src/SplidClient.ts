@@ -1,7 +1,8 @@
 import { BatchClient } from './BatchClient';
-import { getBalance } from './getBalance';
+import { Balance, getBalance } from './getBalance';
 import { getSuggestedPayments } from './getSuggestedPayments';
 import { ScopedLogger } from './logging';
+import { createEntry } from './methods/createEntry';
 import { createExpense } from './methods/createExpense';
 import { createGroup } from './methods/createGroup';
 import { createPayment } from './methods/createPayment';
@@ -209,6 +210,8 @@ export default class SplidClient {
       }
       return data;
     }.bind(this) as (groupId: string) => Promise<Entry[]>,
+    create: this.injectRequestConfig(wrapRequestObject(createEntry)),
+
     expense: {
       create: this.injectRequestConfig(wrapRequestObject(createExpense)),
     },
@@ -285,4 +288,11 @@ export default class SplidClient {
   static getSuggestedPayments = getSuggestedPayments;
   static dedupeByGlobalId = dedupeByGlobalId;
   static getRoundedBalance = toFixed;
+  static getTotal = (balance: Balance) =>
+    SplidClient.getRoundedBalance(
+      Object.values(balance).reduce(
+        (sum, i) => sum + (i.payedBy - i.payedFor),
+        0
+      )
+    );
 }

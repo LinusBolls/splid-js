@@ -1,5 +1,6 @@
 import {
   Entry as SplidJsEntry,
+  EntryCategory as SplidJsEntryCategory,
   EntryItem as SplidJsEntryItem,
   UseridToShareMap as SplidJsUseridToShareMap,
 } from './entry';
@@ -21,4 +22,6 @@ export namespace SplidJs {
    * a map of a userId to their share. the shares are floats between 0 and 1 and their sum is exactly 1.
    */
   export type UseridToShareMap = SplidJsUseridToShareMap;
+
+  export type EntryCategory = SplidJsEntryCategory;
 }

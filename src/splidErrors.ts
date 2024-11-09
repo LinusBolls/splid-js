@@ -14,4 +14,8 @@ export const SplidError = {
     error: 'Access denied: too many invalid codes',
     code: 141,
   },
+  ADD_FIELD_ERROR: {
+    error: 'Permission denied for action addField on class Entry.',
+    code: 119,
+  },
 } as const;
