@@ -8,10 +8,17 @@ import { UpdateGroupResponse } from './methods/updateGroup';
 import { UpdatePersonResponse } from './methods/updatePerson';
 import { RequestConfig } from './requestConfig';
 
+const removeIdProperty = (request: RequestObject) => {
+  return { ...request, id: undefined };
+};
+
 export const executeRequestObjects = async <T extends RequestObject[]>(
   config: RequestConfig,
-  requests: T
+  requestsInput: T
 ) => {
+  // the id is only used by splid-js, so we remove it before sending the request
+  const requests = requestsInput.map(removeIdProperty);
+
   const res = await config.fetch(config.baseUrl + '/parse/batch', {
     method: 'POST',
     body: JSON.stringify({ requests }),
