@@ -10,6 +10,8 @@ import { createPerson } from './methods/createPerson';
 import { findObjects } from './methods/findObjects';
 import { getCodeConfig } from './methods/getCodeConfig';
 import { getCurrencyRates } from './methods/getCurrencyRates';
+import { getFileBlob } from './methods/getFileBlob';
+import { getFileWrapper } from './methods/getFileWrapper';
 import { joinGroupWithAnyCode } from './methods/joinGroupWithAnyCode';
 import { updateEntry } from './methods/updateEntry';
 import { updateGroup } from './methods/updateGroup';
@@ -227,6 +229,36 @@ export default class SplidClient {
      * at the time of writing, this is only used for group wallpapers.
      */
     upload: this.injectRequestConfig(uploadFile),
+
+    /**
+     * returns the metadata of the asset with the given `dataID`.
+     *
+     * you'll probably want to use `SplidClient.file.getBlob` instead.
+     */
+    getInfo: this.injectRequestConfig(wrapRequestObject(getFileWrapper)),
+
+    /**
+     * returns the blob data of the asset with the given `dataID`.
+     *
+     * depending on your execution context, there are multiple ways of processing this data:
+
+     * ```ts
+     * // example: getting the wallpaper source of a group in the browser
+     * const src = URL.createObjectURL(await splid.file.getBlob(groupInfo.wallpaperID));
+     * ```
+     * 
+     * ```ts
+     * // example: writing the wallpaper of a group to a file using NodeJs
+     * const blob = await splid.file.getBlob(groupInfo.wallpaperID);
+     * 
+     * const arrayBuffer = await blob.arrayBuffer();
+     * 
+     * const uint8Array = new Uint8Array(arrayBuffer);
+     * 
+     * await promises.writeFile("./wallpaper.jpeg", uint8Array);
+     * ```
+     */
+    getBlob: this.injectRequestConfig(getFileBlob),
   };
 
   /**
