@@ -22,8 +22,7 @@ const assertObjectId = (objectId: unknown, propertyName: string) => {
 };
 
 const assertEntryCategory = (category: unknown) => {
-  // category can be null or undefined
-  if (typeof category == null) return;
+  if (category == null) return;
 
   const allowedCategoryTypes = Object.values(EntryCategories).map(
     (i) => `"${i}"`
