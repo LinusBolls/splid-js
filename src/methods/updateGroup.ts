@@ -1,4 +1,4 @@
-import { sanitizeParseObject } from '../parse';
+import { sanitizeParseObject, WithoutParseKeys } from '../parse';
 import { RequestConfig } from '../requestConfig';
 import { GroupInfo } from '../types/groupInfo';
 import { IsoTime } from '../types/primitives';
@@ -8,14 +8,12 @@ export interface UpdateGroupResponse {
     updatedAt: IsoTime;
   };
 }
+type Input = Omit<WithoutParseKeys<GroupInfo>, 'UpdateID'>;
 
-export function updateGroup(
-  config: RequestConfig,
-  data: GroupInfo | GroupInfo[]
-) {
+export function updateGroup(config: RequestConfig, data: Input | Input[]) {
   const arr = Array.isArray(data) ? data : [data];
 
-  return arr.map((i) => {
+  return arr.map((i: GroupInfo) => {
     const sanitized = sanitizeParseObject(i);
 
     sanitized.UpdateID = config.randomUUID();

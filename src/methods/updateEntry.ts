@@ -1,4 +1,4 @@
-import { sanitizeParseObject } from '../parse';
+import { sanitizeParseObject, WithoutParseKeys } from '../parse';
 import { RequestConfig } from '../requestConfig';
 import { Entry } from '../types/entry';
 import { IsoTime } from '../types/primitives';
@@ -8,11 +8,12 @@ export interface UpdateEntryResponse {
     updatedAt: IsoTime;
   };
 }
+type Input = Omit<WithoutParseKeys<Entry>, 'UpdateID'>;
 
-export function updateEntry(config: RequestConfig, data: Entry | Entry[]) {
+export function updateEntry(config: RequestConfig, data: Input | Input[]) {
   const arr = Array.isArray(data) ? data : [data];
 
-  return arr.map((i) => {
+  return arr.map((i: Entry) => {
     const sanitized = sanitizeParseObject(i);
 
     sanitized.UpdateID = config.randomUUID();

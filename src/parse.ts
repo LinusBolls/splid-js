@@ -6,7 +6,11 @@ export interface ParseObject {
   __type: string;
 }
 
-export const sanitizeParseObject = <T extends ParseObject>(obj: T) => {
+export type WithoutParseKeys<T> = Omit<T, keyof ParseObject>;
+
+export const sanitizeParseObject = <T extends ParseObject>(
+  obj: T
+): WithoutParseKeys<T> => {
   const { objectId, createdAt, updatedAt, __type, className, ...rest } = obj;
 
   return rest;

@@ -1,3 +1,4 @@
+import { createEntry } from './methods/createEntry';
 import { createExpense } from './methods/createExpense';
 import { createPayment } from './methods/createPayment';
 import { createPerson } from './methods/createPerson';
@@ -27,6 +28,7 @@ export class BatchClient {
     set: this.injectRequestConfig(updateGroup),
   };
   public entry = {
+    create: this.injectRequestConfig(createEntry),
     set: this.injectRequestConfig(updateEntry),
 
     expense: {
