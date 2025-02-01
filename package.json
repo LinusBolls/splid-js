@@ -46,6 +46,6 @@
     "microbundle": "^0.15.1",
     "prettier": "^3.3.3",
     "typescript": "^5.3.3",
-    "vitest": "^2.1.4"
+    "vitest": "^3.0.4"
   }
 }
