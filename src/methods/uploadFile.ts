@@ -25,7 +25,7 @@ export async function uploadFile(
     config.baseUrl + '/parse/files/file',
     {
       method: 'POST',
-      body: buffer,
+      body: buffer.buffer as ArrayBuffer,
       headers: {
         ...config.getHeaders(),
         'Content-Type': 'application/octet-stream',

@@ -42,10 +42,10 @@
   "types": "./dist/mjs/index.d.ts",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/node": "^24.0.8",
+    "@types/node": "^24.1.0",
     "microbundle": "^0.15.1",
-    "prettier": "^3.3.3",
-    "typescript": "^5.3.3",
-    "vitest": "^3.0.4"
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }
