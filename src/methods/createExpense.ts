@@ -70,7 +70,7 @@ const getProfiteersObj = (profiteers: Item['profiteers']) => {
   const dynamicPayers = profiteers.filter((i) => typeof i == 'string');
 
   const staticShare = staticPayers.reduce((sum, i) => sum + i.share, 0);
-  const dynamicShare = 1 / staticShare;
+  const dynamicShare = 1 - staticShare;
 
   let obj = {};
 
@@ -78,7 +78,7 @@ const getProfiteersObj = (profiteers: Item['profiteers']) => {
     obj[payer.id] = payer.share;
   }
   for (const payer of dynamicPayers) {
-    obj[payer] = dynamicShare / staticPayers.length;
+    obj[payer] = dynamicShare / dynamicPayers.length;
   }
   return obj;
 };
