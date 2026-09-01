@@ -39,8 +39,7 @@ type Item = {
   title?: string;
   amount: number;
   profiteers:
-    | Record<string, number>
-    | (string | { id: string; share: number })[];
+    Record<string, number> | (string | { id: string; share: number })[];
 };
 
 const getPayersObj = (payers: Options['payers'], amount: number) => {
